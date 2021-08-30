@@ -1287,3 +1287,7 @@ export const SIGN_ABI = [
 		"type": "function"
 	}
 ];
+
+export const PUNK_IMG = 'https://ipfs.fleek.co/ipfs/bafybeifrahjvhyovihzkggh5tfhnljtxcmj3mtv6enxw5ahvbw4n4qd7l4/images/cryptopunk';
+
+export const CAP_IMG = 'https://ipfs.fleek.co/ipfs/bafybeifrahjvhyovihzkggh5tfhnljtxcmj3mtv6enxw5ahvbw4n4qd7l4/cap/cap-';

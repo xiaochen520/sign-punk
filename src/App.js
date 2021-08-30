@@ -1,18 +1,17 @@
 import { useState, useEffect } from 'react';
 import mergeImages from './libs/mergeImages';
-import { formatUnits } from '@ethersproject/units';
-import axios from 'axios';
+import { formatUnits, parseUnits } from '@ethersproject/units';
+import { create } from 'ipfs-http-client';
 import sty from './App.module.scss';
 import cn from 'classnames';
-import { getConstract, getRandomInt } from './utils';
-import { PUNK_CONTRACT, PUNK_ABI, SIGN_CONTRACT, SIGN_ABI } from './constant';
+import { getConstract, getRandomInt, formatPunkIndex, dataURLtoFile } from './utils';
+import { PUNK_CONTRACT, PUNK_ABI, SIGN_CONTRACT, SIGN_ABI, PUNK_IMG, CAP_IMG } from './constant';
 
 import Modal from './components/Modal';
 
 import bannerImg from './img/banner.png';
 import radomImg from './img/radom-card.png';
 import headImg from './img/head';
-import capImg from './img/cap';
 
 
 function App() {
@@ -22,11 +21,12 @@ function App() {
   const [finalSrc, setFinalSrc] = useState('');
   const [netModal, setNetModal] = useState(false);
   const [punkIndex, setPunkIndex] = useState('');
+  const [signText, setSignText] = useState('');
 
-  useEffect(() => {
-    mergeImages(['https://img0.baidu.com/it/u=3038034683,3655090430&fm=26&fmt=auto&gp=0.jpg', 'https://img2.baidu.com/it/u=2534473183,1666218163&fm=26&fmt=auto&gp=0.jpg'], { crossOrigin: '', width: 600, height: 600 })
-      .then(b64 => setFinalSrc(b64));
-  }, []);
+  // useEffect(() => {
+  //   mergeImages(['https://img0.baidu.com/it/u=3038034683,3655090430&fm=26&fmt=auto&gp=0.jpg', 'https://img2.baidu.com/it/u=2534473183,1666218163&fm=26&fmt=auto&gp=0.jpg'], { crossOrigin: '', width: 600, height: 600 })
+  //     .then(b64 => setFinalSrc(b64));
+  // }, []);
 
   //connect
   async function connect() {
@@ -48,25 +48,57 @@ function App() {
     }
   }, []);
 
-  //createImg
-  async function createSignImg(punkImg) {
-    let imgIndex = getRandomInt(1, 9);
-    
-    let b64 = await mergeImages(['https://storageapi.fleek.co/oxjasonpage-team-bucket/cryptopunks_photo/0.png', punkImg], { crossOrigin: '*' });
+  //random create
+  async function randomCreate(contract, uri) {
+    let price = await contract.callStatic.getMintPrice();
 
-    console.log(2222, b64)
+    contract.mintCryptoPunksSign(uri, '', { from: account, gasLimit: '990000', value: price }).then(res => {
+
+    });
+
+    console.log(111111, price.toNumber())
   }
 
-  async function createPunk() {
+  //createImg
+  async function createSignImg(type) {
     const contract = getConstract(SIGN_CONTRACT, SIGN_ABI, window.ethereum, account);
+    let number = await contract.callStatic.totalSupply();
+    number = number.toNumber();
 
-    let totalNum = await contract.callStatic.totalSupply();
-
-    console.log(totalNum.toNumber())
-    let punkData = await axios.get('https://cryptopunks.herokuapp.com/api/punks/1000');
-
-    createSignImg(punkData.data.image);
+    let punkIndex = formatPunkIndex(number);
+    const client = create('https://ipfs.infura.io:5001/api/v0');
+    let capIndex = getRandomInt(1, 9);
+    let b64 = await mergeImages([`${PUNK_IMG}${punkIndex}.png`, `${CAP_IMG}${capIndex}.png`], { crossOrigin: '*' }, signText);
     
+    const imgFile = dataURLtoFile(b64, `cryptopunkssign${punkIndex}.png`);
+
+    try {
+      const ipfsHash = await client.add(imgFile);
+      const imgUrl = `https://ipfs.infura.io/ipfs/${ipfsHash.path}`;
+
+      const tokenURI = JSON.stringify({
+        name: `${signText}#${number + 1}`,
+        description: 'CryptoPunksSign adds signature attributes to the original CryptoPunks 10,000 punk avatars.users who hold cryptopunks can claim it for free.',
+        image: imgUrl,
+        attributes: []
+      });
+
+      var jsonFile = new File([tokenURI], `cryptopunkssign${punkIndex}.json`, {
+        type: 'application/json'
+      });
+
+      const uriHash = await client.add(jsonFile);
+      const uriUrl = `https://ipfs.infura.io/ipfs/${uriHash.path}`;
+      
+      if(type === 'random') {
+        randomCreate(contract, uriUrl);
+      }
+      
+    } catch (error) {
+      console.log('Error uploading file: ', error)
+    }
+
+    // setFinalSrc(b64);
   }
 
   async function freeDraw() {
@@ -79,15 +111,16 @@ function App() {
 
     let ownAddr = await punkContract.callStatic.punkIndexToAddress(String(punkIndex));
 
-    if(account !== ownAddr) {
+    if (account !== ownAddr) {
       alert('没有CryptoPunks');
     } else {
-      createPunk();
+      // createPunk();
     }
   }
 
   return (
     <div className={sty.app}>
+      <img src={finalSrc} alt="" />
       <div className={sty.nav}>
         <div className={sty.title}>CryptoPunks-Sign</div>
         <div className={sty.desc}>10,000 unique collectible characters with proof of ownership stored on the Ethereum blockchain. The project that inspired the modern CryptoArt movement. Selected press and appearances include Mashable, CNBC, The Financial Times, Bloomberg, MarketWatch, The Paris Review, Salon, </div>
@@ -139,8 +172,8 @@ function App() {
           <div className={sty.title}>newsletter</div>
           <div className={sty.subTitle}>随机抽取</div>
           <div className={cn(sty.inputBox, 'flex-m')}>
-            <input className='flex-1' placeholder='输入签名' type="text" />
-            <button onClick={createPunk} className={sty.btn}>→</button>
+            <input value={signText} onChange={(e) => setSignText(e.target.value)} className='flex-1' placeholder='输入签名' type="text" />
+            <button onClick={() => createSignImg('random')} className={sty.btn}>→</button>
           </div>
         </div>
         <div className={sty.side}>

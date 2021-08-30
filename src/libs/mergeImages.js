@@ -1,21 +1,21 @@
 
 
-	// Defaults
-	const defaultOptions = {
-		format: 'image/png',
-		quality: 0.92,
-		width: undefined,
-		height: undefined,
-		Canvas: undefined,
-		crossOrigin: undefined
-	};
+// Defaults
+const defaultOptions = {
+	format: 'image/png',
+	quality: 0.92,
+	width: undefined,
+	height: undefined,
+	Canvas: undefined,
+	crossOrigin: undefined
+};
 
-	// Return Promise
-	let mergeImages = function (sources, options, text) {
-		if ( sources === void 0 ) sources = [];
-		if ( options === void 0 ) options = {};
+// Return Promise
+let mergeImages = function (sources, options, text) {
+	if (sources === void 0) sources = [];
+	if (options === void 0) options = {};
 
-		return new Promise(function (resolve) {
+	return new Promise(function (resolve) {
 		options = Object.assign({}, defaultOptions, options);
 
 		// Setup browser/Node.js specific variables
@@ -23,19 +23,21 @@
 		var Image = options.Image || window.Image;
 
 		// Load sources
-		var images = sources.map(function (source) { return new Promise(function (resolve, reject) {
-			// Convert sources to objects
-			if (source.constructor.name !== 'Object') {
-				source = { src: source };
-			}
+		var images = sources.map(function (source) {
+			return new Promise(function (resolve, reject) {
+				// Convert sources to objects
+				if (source.constructor.name !== 'Object') {
+					source = { src: source };
+				}
 
-			// Resolve source and img when loaded
-			var img = new Image();
-			img.crossOrigin = options.crossOrigin;
-			img.onerror = function () { return reject(new Error('Couldn\'t load image')); };
-			img.onload = function () { return resolve(Object.assign({}, source, { img: img })); };
-			img.src = source.src;
-		}); });
+				// Resolve source and img when loaded
+				var img = new Image();
+				img.crossOrigin = options.crossOrigin;
+				img.onerror = function () { return reject(new Error('Couldn\'t load image')); };
+				img.onload = function () { return resolve(Object.assign({}, source, { img: img })); };
+				img.src = source.src;
+			});
+		});
 
 		// Get canvas context
 		var ctx = canvas.getContext('2d');
@@ -54,8 +56,12 @@
 					return ctx.drawImage(image.img, image.x || 0, image.y || 0);
 				});
 
-				ctx.font = "24px serif";
-				ctx.fillText("Hello world", 10, 50);
+				if (text) {
+					ctx.font = "28px SnaredrumZeroNbp";
+					ctx.textAlign = "center";
+					ctx.textBaseline = "middle";
+					ctx.fillText(text, 164, 70);
+				}
 
 				if (options.Canvas && options.format === 'image/jpeg') {
 					// Resolve data URI for node-canvas jpeg async
@@ -77,8 +83,8 @@
 				return canvas.toDataURL(options.format, options.quality);
 			}));
 	});
-	};
+};
 
-	
 
-	export default mergeImages;
+
+export default mergeImages;
