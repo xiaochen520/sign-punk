@@ -27,10 +27,15 @@ function App() {
   const [signNote, setSignNote] = useState('');
   const [freeTwitter, setFreeTwitter] = useState('');
   const [signTwitter, setSignTwitter] = useState('');
+  const [uBeforeSignText, setUBeforeSignText] = useState('');
+  const [uSignText, setUSignText] = useState('');
+  const [uTwitter, setUTwitter] = useState('');
+  const [uNote, setUNote] = useState('');
 
 
   const [randomLoad, setRandomLoad] = useState(false);
   const [freeLoad, setFreeLoad] = useState(false);
+  const [updateLoad, setUpdateLoad] = useState(false);
 
   //tip modal
   const [tipModal, setTipModal] = useState(false);
@@ -87,10 +92,10 @@ function App() {
   }, [account]);
 
   //random create
-  async function randomCreate(contract, uri) {
+  async function randomCreate(contract, uri, capIndex) {
     let price = await contract.callStatic.getMintPrice();
 
-    contract.mintCryptoPunksSign(uri, signTwitter, signNote, { from: account, gasLimit: '990000', value: price }).then(res => {
+    contract.mintCryptoPunksSign(capIndex, uri, signTwitter, signNote, { from: account, gasLimit: '990000', value: price }).then(res => {
       setRandomLoad(false);
       setTipText('交易已发送，正在链上进行');
       setTipModal(true);
@@ -98,33 +103,62 @@ function App() {
   }
 
   //free create
-  function freeCreate(contract, uri) {
-    contract.cryptoPunksClaim(punkIndex, uri, freeTwitter, freeNote, { from: account, gasLimit: '990000' }).then(res => {
+  function freeCreate(contract, uri, capIndex) {
+    contract.cryptoPunksClaim(capIndex, punkIndex, uri, freeTwitter, freeNote, { from: account, gasLimit: '990000' }).then(res => {
       setFreeLoad(false);
       setTipText('交易已发送，正在链上进行');
       setTipModal(true);
     }).catch(err => setFreeLoad(false))
   }
 
+  //update
+  async function updateCreate(contract, uri) {
+    let price = await contract.callStatic.getUpdateSignPrice();
+    
+    contract.updatePunksSign(uBeforeSignText, uri, {from: account, gasLimit: '990000', value: price}).then(res => {
+      setUpdateLoad(false);
+      setTipText('交易已发送，正在链上进行');
+      setTipModal(true);
+    }).catch(err => setUpdateLoad(false))
+  }
+
   //createImg
-  async function createSignImg(type) {
+  async function createSignImg(type, cap) {
+    let number;
+    let capIndex;
+    let capText;
     const contract = getConstract(SIGN_CONTRACT, SIGN_ABI, window.ethereum, account);
-    let number = await contract.callStatic.totalSupply();
-    number = number.toNumber();
+    
+    if(type === 'update') {
+      number = uBeforeSignText - 1;
+      capIndex = cap;
+    } else {
+      number = await contract.callStatic.totalSupply();
+      number = number.toNumber();
+      capIndex = getRandomInt(1, 9);
+    }
 
     let signIndex = formatPunkIndex(number);
     const client = create('https://ipfs.infura.io:5001/api/v0');
-    let capIndex = getRandomInt(1, 9);
-    let b64 = await mergeImages([`${PUNK_IMG}${signIndex}.png`, `${CAP_IMG}${capIndex}.png`], { crossOrigin: '*' }, signText);
+
+    if(type === 'random') {
+      capText = signText;
+    } else if(type === 'free') {
+      capText = freeSignText;
+    } else {
+      capText = uSignText;
+    }
+
+    let b64 = await mergeImages([`${PUNK_IMG}${signIndex}.png`, `${CAP_IMG}${capIndex}.png`], { crossOrigin: '*' }, capText);
 
     const imgFile = dataURLtoFile(b64, `cryptopunkssign${signIndex}.png`);
 
     try {
       const ipfsHash = await client.add(imgFile);
       const imgUrl = `https://ipfs.infura.io/ipfs/${ipfsHash.path}`;
-
+console.log(imgUrl)
       const tokenURI = JSON.stringify({
-        name: `${signText}#${number + 1}`,
+        name: `${capText}#${number + 1}`,
         description: 'CryptoPunksSign adds signature attributes to the original CryptoPunks 10,000 punk avatars.users who hold cryptopunks can claim it for free.',
         image: imgUrl,
         attributes: []
@@ -138,16 +172,20 @@ function App() {
       const uriUrl = `https://ipfs.infura.io/ipfs/${uriHash.path}`;
 
       if (type === 'random') {
-        randomCreate(contract, uriUrl);
+        randomCreate(contract, uriUrl, capIndex);
+      } else if(type === 'free') {
+        freeCreate(contract, uriUrl, capIndex);
       } else {
-        freeCreate(contract, uriUrl);
+        updateCreate(contract, uriUrl);
       }
 
     } catch (error) {
       if (type === 'random') {
         setRandomLoad(false);
-      } else {
+      } else if(type === 'free') {
         setFreeLoad(false);
+      } else {
+        setUpdateLoad(false);
       }
       setTipText('网络错误，需vpn');
       setTipModal(true);
@@ -156,7 +194,7 @@ function App() {
 
     // setFinalSrc(b64);
   }
-
+  
   async function freeDraw() {
     if (freeLoad) return;
 
@@ -188,7 +226,7 @@ function App() {
 
     let ownAddr = await punkContract.callStatic.punkIndexToAddress(String(punkIndex));
 
-    if (account !== ownAddr) {
+    if (account.toLowerCase() != ownAddr.toLowerCase()) {
       setFreeLoad(false);
       alert('没有CryptoPunks，不可以免费领取，可以随机抽取');
     } else {
@@ -218,6 +256,27 @@ function App() {
 
     setRandomLoad(true);
     createSignImg('random');
+  }
+  
+
+  async function updateDraw() {
+    if(updateLoad) return;
+
+    if (!uBeforeSignText) {
+      alert('请输入签名punk编号');
+      return;
+    }
+
+    if (!uSignText) {
+      alert('请输入签名');
+      return;
+    }
+    setUpdateLoad(true);
+
+    const contract = getConstract(SIGN_CONTRACT, SIGN_ABI, window.ethereum, account);
+    let cap = await contract.callStatic.getpunksHat(uBeforeSignText);
+
+    createSignImg('update', cap.toNumber());
   }
 
   return (
@@ -300,6 +359,22 @@ function App() {
         </div>
       </div>
 
+      <div className={sty.update}>
+        <div className={cn(sty.inputOuter, 'flex-c')}>
+          <div className={cn(sty.inputBox)}>
+            <input value={uBeforeSignText} onChange={(e) => setUBeforeSignText(e.target.value)} className='flex-1' placeholder='输入签名punk标号' type="text" />
+            <input value={uSignText} onChange={(e) => setUSignText(e.target.value)} className='flex-1' placeholder='更新签名' type="text" />
+            <input value={uTwitter} onChange={(e) => setUTwitter(e.target.value)} className='flex-1' placeholder='twitter' type="text" />
+            <input value={uNote} onChange={(e) => setUNote(e.target.value)} className='flex-1' placeholder='note' type="text" />
+          </div>
+          
+        </div>
+        <button onClick={updateDraw} className={cn(sty.btn, 'flex-m flex-c')}>
+            {
+              updateLoad ? <Loading /> : <span>Update</span>
+            }
+          </button>
+      </div>
       <div className={sty.cData}>
         <div className={sty.title}>已经免费领取的加密朋克用户</div>
         <div className={sty.number}>1234</div>
