@@ -8,6 +8,7 @@ import { getConstract, getRandomInt, formatPunkIndex, dataURLtoFile } from './ut
 import { PUNK_CONTRACT, PUNK_ABI, SIGN_CONTRACT, SIGN_ABI, PUNK_IMG, CAP_IMG } from './constant';
 
 import Modal from './components/Modal';
+import Loading from './components/Loading';
 
 import bannerImg from './img/banner.png';
 import radomImg from './img/radom-card.png';
@@ -18,15 +19,22 @@ function App() {
   const [hasEthereum, setHasEthereum] = useState(false);
   const [account, setAccount] = useState('');
   const [chainId, setChainId] = useState('');
-  const [finalSrc, setFinalSrc] = useState('');
-  const [netModal, setNetModal] = useState(false);
+
   const [punkIndex, setPunkIndex] = useState('');
   const [signText, setSignText] = useState('');
+  const [freeSignText, setFreeSignText] = useState('');
+  const [freeNote, setFreeNote] = useState('');
+  const [signNote, setSignNote] = useState('');
+  const [freeTwitter, setFreeTwitter] = useState('');
+  const [signTwitter, setSignTwitter] = useState('');
 
-  // useEffect(() => {
-  //   mergeImages(['https://img0.baidu.com/it/u=3038034683,3655090430&fm=26&fmt=auto&gp=0.jpg', 'https://img2.baidu.com/it/u=2534473183,1666218163&fm=26&fmt=auto&gp=0.jpg'], { crossOrigin: '', width: 600, height: 600 })
-  //     .then(b64 => setFinalSrc(b64));
-  // }, []);
+
+  const [randomLoad, setRandomLoad] = useState(false);
+  const [freeLoad, setFreeLoad] = useState(false);
+
+  //tip modal
+  const [tipModal, setTipModal] = useState(false);
+  const [tipText, setTipText] = useState('');
 
   //connect
   async function connect() {
@@ -48,15 +56,54 @@ function App() {
     }
   }, []);
 
+
+  //add eventListener
+  useEffect(() => {
+    const { ethereum } = window
+
+    if (ethereum && ethereum.on) {
+      const handleChainChanged = (chain) => {
+        connect();
+      }
+      const handleAccountsChanged = (accounts) => {
+        connect();
+      }
+
+      const handleNetworkChanged = () => {
+        connect();
+      }
+      ethereum.on('chainChanged', handleChainChanged)
+      ethereum.on('networkChanged', handleNetworkChanged)
+      ethereum.on('accountsChanged', handleAccountsChanged)
+
+      return () => {
+        if (ethereum.removeListener) {
+          ethereum.removeListener('chainChanged', handleChainChanged)
+          ethereum.removeListener('networkChanged', handleNetworkChanged)
+          ethereum.removeListener('accountsChanged', handleAccountsChanged)
+        }
+      }
+    }
+  }, [account]);
+
   //random create
   async function randomCreate(contract, uri) {
     let price = await contract.callStatic.getMintPrice();
 
-    contract.mintCryptoPunksSign(uri, '', { from: account, gasLimit: '990000', value: price }).then(res => {
+    contract.mintCryptoPunksSign(uri, signTwitter, signNote, { from: account, gasLimit: '990000', value: price }).then(res => {
+      setRandomLoad(false);
+      setTipText('交易已发送，正在链上进行');
+      setTipModal(true);
+    }).catch(err => setRandomLoad(false));
+  }
 
-    });
-
-    console.log(111111, price.toNumber())
+  //free create
+  function freeCreate(contract, uri) {
+    contract.cryptoPunksClaim(punkIndex, uri, freeTwitter, freeNote, { from: account, gasLimit: '990000' }).then(res => {
+      setFreeLoad(false);
+      setTipText('交易已发送，正在链上进行');
+      setTipModal(true);
+    }).catch(err => setFreeLoad(false))
   }
 
   //createImg
@@ -65,12 +112,12 @@ function App() {
     let number = await contract.callStatic.totalSupply();
     number = number.toNumber();
 
-    let punkIndex = formatPunkIndex(number);
+    let signIndex = formatPunkIndex(number);
     const client = create('https://ipfs.infura.io:5001/api/v0');
     let capIndex = getRandomInt(1, 9);
-    let b64 = await mergeImages([`${PUNK_IMG}${punkIndex}.png`, `${CAP_IMG}${capIndex}.png`], { crossOrigin: '*' }, signText);
-    
-    const imgFile = dataURLtoFile(b64, `cryptopunkssign${punkIndex}.png`);
+    let b64 = await mergeImages([`${PUNK_IMG}${signIndex}.png`, `${CAP_IMG}${capIndex}.png`], { crossOrigin: '*' }, signText);
+
+    const imgFile = dataURLtoFile(b64, `cryptopunkssign${signIndex}.png`);
 
     try {
       const ipfsHash = await client.add(imgFile);
@@ -83,18 +130,27 @@ function App() {
         attributes: []
       });
 
-      var jsonFile = new File([tokenURI], `cryptopunkssign${punkIndex}.json`, {
+      var jsonFile = new File([tokenURI], `cryptopunkssign${signIndex}.json`, {
         type: 'application/json'
       });
 
       const uriHash = await client.add(jsonFile);
       const uriUrl = `https://ipfs.infura.io/ipfs/${uriHash.path}`;
-      
-      if(type === 'random') {
+
+      if (type === 'random') {
         randomCreate(contract, uriUrl);
+      } else {
+        freeCreate(contract, uriUrl);
       }
-      
+
     } catch (error) {
+      if (type === 'random') {
+        setRandomLoad(false);
+      } else {
+        setFreeLoad(false);
+      }
+      setTipText('网络错误，需vpn');
+      setTipModal(true);
       console.log('Error uploading file: ', error)
     }
 
@@ -102,25 +158,70 @@ function App() {
   }
 
   async function freeDraw() {
-    if (chainId != 4) {
-      setNetModal(true);
+    if (freeLoad) return;
+
+    if (!hasEthereum) {
+      setTipText('请先安装metamask钱包并切换到主网');
+      setTipModal(true);
       return;
     }
+
+    if (chainId != 4) {
+      setTipText('请切换到主网');
+      setTipModal(true);
+      return;
+    }
+
+    if (!punkIndex) {
+      alert('请输入punk编号');
+      return;
+    }
+
+    if (!freeSignText) {
+      alert('请输入签名');
+      return;
+    }
+
+    setFreeLoad(true);
 
     const punkContract = getConstract(PUNK_CONTRACT, PUNK_ABI, window.ethereum, account);
 
     let ownAddr = await punkContract.callStatic.punkIndexToAddress(String(punkIndex));
 
     if (account !== ownAddr) {
-      alert('没有CryptoPunks');
+      setFreeLoad(false);
+      alert('没有CryptoPunks，不可以免费领取，可以随机抽取');
     } else {
-      // createPunk();
+      createSignImg('free');
     }
+  }
+
+  function randomDraw() {
+    if (randomLoad) return;
+
+    if (!hasEthereum) {
+      setTipText('请先安装metamask钱包并切换到主网');
+      setTipModal(true);
+      return;
+    }
+
+    if (chainId != 4) {
+      setTipText('请切换到主网');
+      setTipModal(true);
+      return;
+    }
+
+    if (!signText) {
+      alert('请输入签名');
+      return;
+    }
+
+    setRandomLoad(true);
+    createSignImg('random');
   }
 
   return (
     <div className={sty.app}>
-      <img src={finalSrc} alt="" />
       <div className={sty.nav}>
         <div className={sty.title}>CryptoPunks-Sign</div>
         <div className={sty.desc}>10,000 unique collectible characters with proof of ownership stored on the Ethereum blockchain. The project that inspired the modern CryptoArt movement. Selected press and appearances include Mashable, CNBC, The Financial Times, Bloomberg, MarketWatch, The Paris Review, Salon, </div>
@@ -153,9 +254,14 @@ function App() {
           <div className={cn(sty.title, 'tc')}>申领punk</div>
           <div className={cn(sty.inputBox, 'flex flex-j')}>
             <input value={punkIndex} onChange={e => setPunkIndex(e.target.value)} placeholder='请输入编号' type="text" />
-            <input placeholder='请输入签名' type="text" />
+            <input value={freeSignText} onChange={e => setFreeSignText(e.target.value)} placeholder='请输入签名' type="text" />
           </div>
-
+          <div className={sty.inputBox}>
+            <input style={{ width: '100%' }} value={freeNote} onChange={e => setFreeNote(e.target.value)} placeholder='请输入编号' type="text" />
+          </div>
+          <div className={sty.inputBox}>
+            <input style={{ width: '100%' }} value={freeTwitter} onChange={e => setFreeTwitter(e.target.value)} placeholder='请输入编号' type="text" />
+          </div>
           <div className={sty.tip}>
             <div>Tip:</div>
             <div>1.前100张用户免费领取</div>
@@ -163,7 +269,11 @@ function App() {
             <div>3.持有加密punks的用户，可以免费领取对应的签名版</div>
           </div>
 
-          <button onClick={freeDraw} className={sty.btn}>CLAIM</button>
+          <button onClick={freeDraw} className={cn(sty.btn, 'flex-m flex-c')}>
+            {
+              freeLoad ? <Loading /> : <span>CLAIM</span>
+            }
+          </button>
         </div>
       </div>
 
@@ -171,9 +281,18 @@ function App() {
         <div className={sty.left}>
           <div className={sty.title}>newsletter</div>
           <div className={sty.subTitle}>随机抽取</div>
-          <div className={cn(sty.inputBox, 'flex-m')}>
-            <input value={signText} onChange={(e) => setSignText(e.target.value)} className='flex-1' placeholder='输入签名' type="text" />
-            <button onClick={() => createSignImg('random')} className={sty.btn}>→</button>
+          <div className={cn(sty.inputOuter, 'flex-m')}>
+            <div className={cn(sty.inputBox, 'flex-1')}>
+              <input value={signText} onChange={(e) => setSignText(e.target.value)} className='flex-1' placeholder='输入签名' type="text" />
+              <input value={signNote} onChange={(e) => setSignNote(e.target.value)} className='flex-1' placeholder='输入签名' type="text" />
+              <input value={signTwitter} onChange={(e) => setSignTwitter(e.target.value)} className='flex-1' placeholder='输入签名' type="text" />
+            </div>
+
+            <button onClick={randomDraw} className={cn(sty.btn, 'flex-m flex-c')}>
+              {
+                randomLoad ? <Loading /> : <span>→</span>
+              }
+            </button>
           </div>
         </div>
         <div className={sty.side}>
@@ -186,7 +305,7 @@ function App() {
         <div className={sty.number}>1234</div>
       </div>
 
-      <div className={sty.signed}>
+      {/* <div className={sty.signed}>
         <div className={sty.title}>已经开启的加密签名</div>
         <div>
           <div>
@@ -194,11 +313,11 @@ function App() {
             <div>Elon Mask</div>
           </div>
         </div>
-      </div>
+      </div> */}
 
-      <Modal show={netModal} onHide={() => setNetModal(false)}>
+      <Modal show={tipModal} onHide={() => setTipModal(false)}>
         <div className={sty.accountModal}>
-          Unsupported network
+          {tipText}
         </div>
       </Modal>
     </div>

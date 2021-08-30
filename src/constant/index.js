@@ -1,4 +1,4 @@
-export const PUNK_CONTRACT = '0xbce728f4b653a93dd923d3a3547d5fe09c0a6e00';
+export const PUNK_CONTRACT = '0xb6eac146304a957dc12d0cde4ed8b43a7f468c67';
 export const PUNK_ABI = [
 	{
 		"constant": true,
@@ -641,7 +641,7 @@ export const PUNK_ABI = [
 	}
 ];
 
-export const SIGN_CONTRACT = '0xd6e0d0aabc1c1bbbac02fc16c8670c73c842d381';
+export const SIGN_CONTRACT = '0x6A671EA72cDA379886c41C2AdF6C2aD99c7a9BBB';
 export const SIGN_ABI = [
 	{
 		"inputs": [],
@@ -804,6 +804,11 @@ export const SIGN_ABI = [
 				"internalType": "string",
 				"name": "twitter",
 				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "notes",
+				"type": "string"
 			}
 		],
 		"name": "cryptoPunksClaim",
@@ -923,11 +928,16 @@ export const SIGN_ABI = [
 				"type": "uint256"
 			}
 		],
-		"name": "getpunksTwitter",
+		"name": "getpunksInfo",
 		"outputs": [
 			{
 				"internalType": "string",
 				"name": "twitter",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "notes",
 				"type": "string"
 			}
 		],
@@ -968,6 +978,11 @@ export const SIGN_ABI = [
 			{
 				"internalType": "string",
 				"name": "twitter",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "notes",
 				"type": "string"
 			}
 		],
@@ -1235,6 +1250,30 @@ export const SIGN_ABI = [
 		],
 		"name": "updateManager",
 		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "index",
+				"type": "uint256"
+			},
+			{
+				"internalType": "string",
+				"name": "notes",
+				"type": "string"
+			}
+		],
+		"name": "updatePunksNote",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
 		"stateMutability": "nonpayable",
 		"type": "function"
 	},
