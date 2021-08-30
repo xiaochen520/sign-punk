@@ -3,6 +3,7 @@
     margin: 0 auto;
 }
 .app {
+    padding-bottom: 50px;
     .nav {
         @include wrap;
         padding: 50px 0;

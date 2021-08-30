@@ -37,6 +37,8 @@ function App() {
   const [freeLoad, setFreeLoad] = useState(false);
   const [updateLoad, setUpdateLoad] = useState(false);
 
+  const [freeTime, setFreeTime] = useState(false);
+
   //tip modal
   const [tipModal, setTipModal] = useState(false);
   const [tipText, setTipText] = useState('');
@@ -91,6 +93,16 @@ function App() {
     }
   }, [account]);
 
+  useEffect(() => {
+    if (!account) return;
+    const contract = getConstract(SIGN_CONTRACT, SIGN_ABI, window.ethereum, account);
+
+    contract.callStatic.getpunks().then(res => {
+      setFreeTime(res.toNumber())
+    });
+
+  }, [account]);
+
   //random create
   async function randomCreate(contract, uri, capIndex) {
     let price = await contract.callStatic.getMintPrice();
@@ -114,8 +126,8 @@ function App() {
   //update
   async function updateCreate(contract, uri) {
     let price = await contract.callStatic.getUpdateSignPrice();
-    
-    contract.updatePunksSign(uBeforeSignText, uri, {from: account, gasLimit: '990000', value: price}).then(res => {
+
+    contract.updatePunksSign(uBeforeSignText, uri, { from: account, gasLimit: '990000', value: price }).then(res => {
       setUpdateLoad(false);
       setTipText('交易已发送，正在链上进行');
       setTipModal(true);
@@ -128,8 +140,8 @@ function App() {
     let capIndex;
     let capText;
     const contract = getConstract(SIGN_CONTRACT, SIGN_ABI, window.ethereum, account);
-    
-    if(type === 'update') {
+
+    if (type === 'update') {
       number = uBeforeSignText - 1;
       capIndex = cap;
     } else {
@@ -141,9 +153,9 @@ function App() {
     let signIndex = formatPunkIndex(number);
     const client = create('https://ipfs.infura.io:5001/api/v0');
 
-    if(type === 'random') {
+    if (type === 'random') {
       capText = signText;
-    } else if(type === 'free') {
+    } else if (type === 'free') {
       capText = freeSignText;
     } else {
       capText = uSignText;
@@ -156,7 +168,7 @@ function App() {
     try {
       const ipfsHash = await client.add(imgFile);
       const imgUrl = `https://ipfs.infura.io/ipfs/${ipfsHash.path}`;
-console.log(imgUrl)
+      console.log(imgUrl)
       const tokenURI = JSON.stringify({
         name: `${capText}#${number + 1}`,
         description: 'CryptoPunksSign adds signature attributes to the original CryptoPunks 10,000 punk avatars.users who hold cryptopunks can claim it for free.',
@@ -173,7 +185,7 @@ console.log(imgUrl)
 
       if (type === 'random') {
         randomCreate(contract, uriUrl, capIndex);
-      } else if(type === 'free') {
+      } else if (type === 'free') {
         freeCreate(contract, uriUrl, capIndex);
       } else {
         updateCreate(contract, uriUrl);
@@ -182,7 +194,7 @@ console.log(imgUrl)
     } catch (error) {
       if (type === 'random') {
         setRandomLoad(false);
-      } else if(type === 'free') {
+      } else if (type === 'free') {
         setFreeLoad(false);
       } else {
         setUpdateLoad(false);
@@ -194,7 +206,7 @@ console.log(imgUrl)
 
     // setFinalSrc(b64);
   }
-  
+
   async function freeDraw() {
     if (freeLoad) return;
 
@@ -257,10 +269,10 @@ console.log(imgUrl)
     setRandomLoad(true);
     createSignImg('random');
   }
-  
+
 
   async function updateDraw() {
-    if(updateLoad) return;
+    if (updateLoad) return;
 
     if (!uBeforeSignText) {
       alert('请输入签名punk编号');
@@ -367,18 +379,21 @@ console.log(imgUrl)
             <input value={uTwitter} onChange={(e) => setUTwitter(e.target.value)} className='flex-1' placeholder='twitter' type="text" />
             <input value={uNote} onChange={(e) => setUNote(e.target.value)} className='flex-1' placeholder='note' type="text" />
           </div>
-          
+
         </div>
         <button onClick={updateDraw} className={cn(sty.btn, 'flex-m flex-c')}>
-            {
-              updateLoad ? <Loading /> : <span>Update</span>
-            }
-          </button>
+          {
+            updateLoad ? <Loading /> : <span>Update</span>
+          }
+        </button>
       </div>
-      <div className={sty.cData}>
-        <div className={sty.title}>已经免费领取的加密朋克用户</div>
-        <div className={sty.number}>1234</div>
-      </div>
+      {
+        freeTime > 0 && <div className={sty.cData}>
+          <div className={sty.title}>已经免费领取的加密朋克用户</div>
+          <div className={sty.number}>{freeTime}</div>
+        </div>
+      }
+
 
       {/* <div className={sty.signed}>
         <div className={sty.title}>已经开启的加密签名</div>
