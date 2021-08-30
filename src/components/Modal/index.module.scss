@@ -1,0 +1,43 @@
+:global {
+    .modal-enter {
+        opacity: 0;
+    }
+    .modal-enter-active {
+        opacity: 1;
+        transition: opacity 200ms;
+    }
+    .modal-exit {
+        opacity: 1;
+    }
+    .modal-exit-active {
+        opacity: 0;
+        transition: opacity 200ms;
+    }
+}
+
+.mask {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 0;
+    z-index: 999;
+    background-color: rgba(0, 0, 0, 0.85);
+    .box {
+        position: absolute;
+        left: 50%;
+        top: 45%;
+        transform: translate(-50%, -50%);
+        .closeIcon {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            cursor: pointer;
+            padding: 10px;
+            img {
+                display: block;
+                width: 20px;
+            }
+        }
+    }
+}
