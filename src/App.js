@@ -132,7 +132,7 @@ function App() {
     const contract = getConstract(SIGN_CONTRACT, SIGN_ABI, window.ethereum, account);
 
     //get free number
-    contract.callStatic.getpunks().then(res => {
+    contract.callStatic.totalSupply().then(res => {
       setFreeTime(res.toNumber())
     });
 
@@ -505,7 +505,7 @@ function App() {
       {
         freeTime > 0 && <div className={sty.cData}>
           <div className={sty.number}>{freeTime}</div>
-          <div className={sty.title}>Encrypted punk users who have received it for free</div>
+          <div className={sty.title}>Cryptopunks-sign users</div>
           
         </div>
       }
