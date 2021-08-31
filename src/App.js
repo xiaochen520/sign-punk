@@ -264,8 +264,8 @@ function App() {
       setTipModal(true);
       return;
     }
-
-    if (!/^[A-Za-z0-9]{0,7}$/.test(signText)) {
+console.log(11111,freeSignText)
+    if (!/^[A-Za-z0-9]{0,7}$/.test(freeSignText)) {
       setTipText('You can enter 7 letters or numbers at most');
       setTipModal(true);
       return;
@@ -338,7 +338,7 @@ function App() {
     const contract = getConstract(SIGN_CONTRACT, SIGN_ABI, window.ethereum, account);
 
     if (updateTab === 0) {
-      if (!/^[A-Za-z0-9]{0,7}$/.test(signText)) {
+      if (!/^[A-Za-z0-9]{0,7}$/.test(uSignText)) {
         setTipText('You can enter 7 letters or numbers at most');
         setTipModal(true);
         setUpdateLoad(false);
