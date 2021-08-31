@@ -24,11 +24,11 @@
     .nav {
         @include wrap;
         padding: 30px 0;
+        margin-bottom: 30px;
         .title {
             font-size: 50px;
             color: #04004d;
             font-weight: bold;
-            margin-bottom: 30px;
         }
         .desc {
             font-size: 16px;
@@ -219,7 +219,7 @@
                 border: 1px solid #fff;
                 border-radius: 6px;
                 padding: 2px 3px;
-                margin-bottom: 30px;
+                margin-bottom: 100px;
                 .tab {
                     color: #fff;
                     font-size: 16px;
@@ -312,10 +312,12 @@
                 -webkit-flex-shrink: 0;
                 flex-shrink: 0;
                 padding: 0 15px;
+                box-sizing: border-box;
                 .item {
                     border: 1px solid rgb(229, 232, 235);
                     border-radius: 5px;
                     padding: 8px;
+                    margin-bottom: 30px;
                     .image {
                         width: 100%;
                         border-radius: 3px;

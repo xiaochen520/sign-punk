@@ -60,7 +60,7 @@ function App() {
     const chainId = await window.ethereum.request({ method: 'eth_chainId' })
 
     const balance = await new Web3Provider(window.ethereum).getBalance(addresses[0])
-  
+
     setAccount(addresses[0]);
     setChainId(parseInt(chainId));
     setEthBalance(formatNum(formatUnits(balance), 3));
@@ -82,7 +82,7 @@ function App() {
       }
       arr.push(obj);
     }
-console.log(5555, arr)
+    console.log(5555, arr)
     setSignList(arr);
   }
 
@@ -147,7 +147,7 @@ console.log(5555, arr)
 
     contract.mintCryptoPunksSign(capIndex, uri, signTwitter, signNote, { from: account, gasLimit: '990000', value: price }).then(res => {
       setRandomLoad(false);
-      setTipText('交易已发送，正在链上进行');
+      setTipText('The transaction has been sent on the chain');
       setTipModal(true);
     }).catch(err => setRandomLoad(false));
   }
@@ -156,7 +156,7 @@ console.log(5555, arr)
   function freeCreate(contract, uri, capIndex) {
     contract.cryptoPunksClaim(capIndex, punkIndex, uri, freeTwitter, freeNote, { from: account, gasLimit: '990000' }).then(res => {
       setFreeLoad(false);
-      setTipText('交易已发送，正在链上进行');
+      setTipText('The transaction has been sent on the chain');
       setTipModal(true);
     }).catch(err => setFreeLoad(false))
   }
@@ -167,7 +167,7 @@ console.log(5555, arr)
 
     contract.updatePunksSign(uBeforeSignText, uri, { from: account, gasLimit: '990000', value: price }).then(res => {
       setUpdateLoad(false);
-      setTipText('交易已发送，正在链上进行');
+      setTipText('The transaction has been sent on the chain');
       setTipModal(true);
     }).catch(err => setUpdateLoad(false))
   }
@@ -237,7 +237,7 @@ console.log(5555, arr)
       } else {
         setUpdateLoad(false);
       }
-      setTipText('网络错误，需vpn');
+      setTipText('Network error, please try again');
       setTipModal(true);
       console.log('Error uploading file: ', error)
     }
@@ -249,24 +249,24 @@ console.log(5555, arr)
     if (freeLoad) return;
 
     if (!hasEthereum) {
-      setTipText('请先安装metamask钱包并切换到主网');
+      setTipText('Please install metamask wallet and switch to the Main network');
       setTipModal(true);
       return;
     }
 
     if (chainId != 4) {
-      setTipText('请切换到主网');
+      setTipText('Please switch to the Main network');
       setTipModal(true);
       return;
     }
 
     if (!punkIndex) {
-      alert('请输入punk编号');
+      alert('Please enter your punk number');
       return;
     }
 
     if (!/^[A-Za-z0-9]{0,7}$/.test(signText)) {
-      alert('只能输入不大于7位数的字母和数字');
+      alert('You can enter 7 letters and numbers at most');
       return;
     }
 
@@ -278,7 +278,7 @@ console.log(5555, arr)
 
     if (account.toLowerCase() != ownAddr.toLowerCase()) {
       setFreeLoad(false);
-      alert('没有CryptoPunks，不可以免费领取，可以随机抽取');
+      alert('CryptoPunks are not for free but will be sent randomly by the system');
     } else {
       createSignImg('free');
     }
@@ -288,19 +288,19 @@ console.log(5555, arr)
     if (randomLoad) return;
 
     if (!hasEthereum) {
-      setTipText('请先安装metamask钱包并切换到主网');
+      setTipText('Please install metamask wallet and switch to the Main network');
       setTipModal(true);
       return;
     }
 
     if (chainId != 4) {
-      setTipText('请切换到主网');
+      setTipText('Please switch to the Main network');
       setTipModal(true);
       return;
     }
 
     if (!/^[A-Za-z0-9]{0,7}$/.test(signText)) {
-      alert('只能输入不大于7位数的字母和数字');
+      alert('You can enter 7 letters and numbers at most');
       return;
     }
 
@@ -313,19 +313,19 @@ console.log(5555, arr)
     if (updateLoad) return;
 
     if (!hasEthereum) {
-      setTipText('请先安装metamask钱包并切换到主网');
+      setTipText('Please install metamask wallet and switch to the Main network');
       setTipModal(true);
       return;
     }
 
     if (chainId != 4) {
-      setTipText('请切换到主网');
+      setTipText('Please switch to the Main network');
       setTipModal(true);
       return;
     }
 
     if (!uBeforeSignText) {
-      alert('请输入签名punk编号');
+      alert('Please enter your signature');
       return;
     }
 
@@ -347,7 +347,7 @@ console.log(5555, arr)
     if (updateTab === 1) {
       contract.updatePunksTwitter(uBeforeSignText, uTwitter).then(res => {
         setUpdateLoad(false);
-        setTipText('交易已发送，正在链上进行');
+        setTipText('The transaction has been sent on the chain');
         setTipModal(true);
       }).catch(err => setUpdateLoad(false))
     }
@@ -355,7 +355,7 @@ console.log(5555, arr)
     if (updateTab === 2) {
       contract.updatePunksNote(uBeforeSignText, uNote).then(res => {
         setUpdateLoad(false);
-        setTipText('交易已发送，正在链上进行');
+        setTipText('The transaction has been sent on the chain');
         setTipModal(true);
       }).catch(err => setUpdateLoad(false))
     }
@@ -363,13 +363,16 @@ console.log(5555, arr)
 
   return (
     <div className={sty.app}>
-      <div className={cn(sty.account, 'tr')}>
-        <div style={{marginRight: 10}} className={sty.outer}>{ethBalance}ETH</div>
-        <div className={sty.outer}>
-          Account: {account || 'Disconnect'}</div>
-      </div>
+
       <div className={sty.nav}>
-        <div className={sty.title}>CryptoPunks-Sign</div>
+        <div className={cn('flex-m')}>
+          <div className={cn(sty.title, 'flex-1')}>CryptoPunks-Sign</div>
+          <div className={cn(sty.account, 'tr')}>
+            <div style={{ marginRight: 10 }} className={sty.outer}>{ethBalance}ETH</div>
+            <div className={sty.outer}>
+              Account: {account || 'Disconnect'}</div>
+          </div>
+        </div>
         <div className={sty.desc}>10,000 unique collectible characters with proof of ownership stored on the Ethereum blockchain. The project that inspired the modern CryptoArt movement. Selected press and appearances include Mashable, CNBC, The Financial Times, Bloomberg, MarketWatch, The Paris Review, Salon, </div>
       </div>
       <div className={sty.banner}>
@@ -505,7 +508,7 @@ console.log(5555, arr)
 
       <div className={sty.signed}>
         <div className={sty.title}>Encrypted punk signature that has been turned on</div>
-        <div className={cn(sty.box, 'flex')}>
+        <div className={cn(sty.box, 'flex flex-w')}>
           {
             signList.map(e => (
               <div key={e.name} className={sty.outer}>

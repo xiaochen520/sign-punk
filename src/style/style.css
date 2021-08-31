@@ -69,7 +69,7 @@
     flex-shrink: 0;
 }
 
-.flex-wrap {
+.flex-w {
     -webkit-box-wrap: wrap;
     -ms-flex-wrap: wrap;
     -webkit-flex-wrap: wrap;
