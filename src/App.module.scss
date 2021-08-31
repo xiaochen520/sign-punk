@@ -74,11 +74,11 @@
             }
         }
         .sideBox {
-            width: 460px;
+            width: 480px;
             border: 1px solid #e7e7e9;
             box-shadow: inset 0px -1px 0px #f3f3f4;
             border-radius: 30px;
-            padding: 30px 15px;
+            padding: 30px 20px;
             box-sizing: border-box;
             // background: #f9f8fd;
             .title {
@@ -89,6 +89,7 @@
             }
             .inputBox {
                 margin-top: 15px;
+                position: relative;
                 input {
                     border: 1px solid #e0e0e0;
                     box-sizing: border-box;
@@ -104,6 +105,17 @@
                         border-color: rgba(0, 0, 0, 0.1);
                         box-shadow: 0 0 0 4px rgba(234, 76, 137, 0.1);
                     }
+                }
+            }
+            .require {
+                &:after {
+                    content: "*";
+                    position: absolute;
+                    left: -12px;
+                    top: 0;
+                    color: red;
+                    line-height: 56px;
+                    font-size: 20px;
                 }
             }
             .tip {
@@ -222,7 +234,7 @@
             }
         }
         .side {
-            width: 450px;
+            width: 480px;
             padding-right: 50px;
             .tabs {
                 border: 1px solid #fff;
@@ -251,6 +263,10 @@
         }
         .inputBox {
             width: 100%;
+            margin-bottom: 20px;
+            &:last-child {
+                margin-bottom: 0px;
+            }
             input {
                 background: #ffffff;
                 box-shadow: 8px 20px 30px rgba(0, 0, 0, 0.01);
@@ -263,10 +279,19 @@
                 outline: none;
                 box-sizing: border-box;
                 padding: 0 20px;
-                margin-bottom: 20px;
-                &:last-child {
-                    margin-bottom: 0px;
-                }
+            }
+            
+        }
+        .require {
+            position: relative;
+            &:after {
+                content: "*";
+                position: absolute;
+                left: -12px;
+                top: 0;
+                color: red;
+                line-height: 45px;
+                font-size: 20px;
             }
         }
         .btn {

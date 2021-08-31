@@ -206,10 +206,9 @@ function App() {
     try {
       const ipfsHash = await client.add(imgFile);
       const imgUrl = `https://ipfs.infura.io/ipfs/${ipfsHash.path}`;
-      console.log(imgUrl)
       const tokenURI = JSON.stringify({
         name: `${capText}#${number + 1}`,
-        description: 'CryptoPunksSign adds signature attributes to the original CryptoPunks 10,000 punk avatars.users who hold cryptopunks can claim it for free.',
+        description: 'CryptoPunksSign add signature attributes to the original CryptoPunks 10,000 punk avatars, and users who hold cryptopunks can claim them for free. Users with CryptoPunksSign can change their signature and bind it to Twitter.',
         image: imgUrl,
         attributes: []
       });
@@ -261,12 +260,14 @@ function App() {
     }
 
     if (!punkIndex) {
-      alert('Please enter your punk number');
+      setTipText('Please enter your punk number');
+      setTipModal(true);
       return;
     }
 
     if (!/^[A-Za-z0-9]{0,7}$/.test(signText)) {
-      alert('You can enter 7 letters and numbers at most');
+      setTipText('You can enter 7 letters or numbers at most');
+      setTipModal(true);
       return;
     }
 
@@ -278,7 +279,8 @@ function App() {
 
     if (account.toLowerCase() != ownAddr.toLowerCase()) {
       setFreeLoad(false);
-      alert('CryptoPunks are not for free but will be sent randomly by the system');
+      setTipText('CryptoPunks are not for free but will be sent randomly by the system');
+      setTipModal(true);
     } else {
       createSignImg('free');
     }
@@ -300,7 +302,8 @@ function App() {
     }
 
     if (!/^[A-Za-z0-9]{0,7}$/.test(signText)) {
-      alert('You can enter 7 letters and numbers at most');
+      setTipText('You can enter 7 letters or numbers at most');
+      setTipModal(true);
       return;
     }
 
@@ -325,7 +328,8 @@ function App() {
     }
 
     if (!uBeforeSignText) {
-      alert('Please enter your signature');
+      setTipText('Please enter your signature');
+      setTipModal(true);
       return;
     }
 
@@ -335,7 +339,8 @@ function App() {
 
     if (updateTab === 0) {
       if (!/^[A-Za-z0-9]{0,7}$/.test(signText)) {
-        alert('请输入签名');
+        setTipText('You can enter 7 letters or numbers at most');
+        setTipModal(true);
         setUpdateLoad(false);
         return;
       }
@@ -377,7 +382,7 @@ function App() {
               Account: {account || 'Disconnect'}</div>
           </div>
         </div>
-        <div className={sty.desc}>10,000 unique collectible characters with proof of ownership stored on the Ethereum blockchain. The project that inspired the modern CryptoArt movement. Selected press and appearances include Mashable, CNBC, The Financial Times, Bloomberg, MarketWatch, The Paris Review, Salon, </div>
+        <div className={sty.desc}>CryptoPunksSign add signature attributes to the original CryptoPunks 10,000 punk avatars, and users who hold cryptopunks can claim them for free. Users with CryptoPunksSign can change their signature and bind it to Twitter.</div>
       </div>
       <div className={sty.banner}>
         <img src={bannerImg} alt="" />
@@ -411,8 +416,8 @@ function App() {
         </div>
         <div className={sty.sideBox}>
           <div className={cn(sty.title, 'tc')}>Claim Your Punk</div>
-          <div className={cn(sty.inputBox, 'flex flex-j')}>
-            <input value={punkIndex} onChange={e => setPunkIndex(e.target.value)} placeholder='Enter the number of CryptoPunks you own' type="text" />
+          <div className={cn(sty.inputBox, sty.require, 'flex flex-j')}>
+            <input value={punkIndex} onChange={e => setPunkIndex(e.target.value)} placeholder='The number of CryptoPunks you own(such as "002")' type="text" />
           </div>
           <div className={sty.inputBox}>
             <input value={freeSignText} onChange={e => setFreeSignText(e.target.value)} placeholder='Enter the signature' type="text" />
@@ -475,23 +480,31 @@ function App() {
             <div onClick={() => setUpdateTab(1)} className={cn(sty.tab, { [sty.active]: updateTab === 1 })}>update twitter</div>
             <div onClick={() => setUpdateTab(2)} className={cn(sty.tab, { [sty.active]: updateTab === 2 })}>update note</div>
           </div>
-          <div style={{ display: updateTab === 0 ? 'flex' : 'none' }} className={cn(sty.inputOuter, 'flex-c')}>
+          <div style={{ display: updateTab === 0 ? 'block' : 'none' }} className={cn(sty.inputOuter)}>
+            <div className={cn(sty.inputBox, sty.require)}>
+              <input value={uBeforeSignText} onChange={(e) => setUBeforeSignText(e.target.value)} className={cn('flex-1')} placeholder='The number of CryptoPunks-Sign you own(such as "1")' type="text" />
+            </div>
             <div className={cn(sty.inputBox)}>
-              <input value={uBeforeSignText} onChange={(e) => setUBeforeSignText(e.target.value)} className='flex-1' placeholder='Enter the number of CryptoPunks-Sign you own' type="text" />
               <input value={uSignText} onChange={(e) => setUSignText(e.target.value)} className='flex-1' placeholder='Enter the signature' type="text" />
             </div>
           </div>
 
-          <div style={{ display: updateTab === 1 ? 'flex' : 'none' }} className={cn(sty.inputOuter, 'flex-c')}>
+          <div style={{ display: updateTab === 1 ? 'block' : 'none' }} className={cn(sty.inputOuter)}>
+            <div className={cn(sty.inputBox, sty.require)}>
+              <input value={uBeforeSignText} onChange={(e) => setUBeforeSignText(e.target.value)} className='flex-1' placeholder='The number of CryptoPunks-Sign you own(such as "1")' type="text" />
+
+            </div>
             <div className={cn(sty.inputBox)}>
-              <input value={uBeforeSignText} onChange={(e) => setUBeforeSignText(e.target.value)} className='flex-1' placeholder='Enter the number of CryptoPunks-Sign you own' type="text" />
               <input value={uTwitter} onChange={(e) => setUTwitter(e.target.value)} className='flex-1' placeholder='Enter a Twitter handle' type="text" />
             </div>
           </div>
 
-          <div style={{ display: updateTab === 2 ? 'flex' : 'none' }} className={cn(sty.inputOuter, 'flex-c')}>
+          <div style={{ display: updateTab === 2 ? 'block' : 'none' }} className={cn(sty.inputOuter)}>
+            <div className={cn(sty.inputBox, sty.require)}>
+              <input value={uBeforeSignText} onChange={(e) => setUBeforeSignText(e.target.value)} className='flex-1' placeholder='The number of CryptoPunks-Sign you own(such as "1")' type="text" />
+
+            </div>
             <div className={cn(sty.inputBox)}>
-              <input value={uBeforeSignText} onChange={(e) => setUBeforeSignText(e.target.value)} className='flex-1' placeholder='Enter the number of CryptoPunks-Sign you own' type="text" />
               <input value={uNote} onChange={(e) => setUNote(e.target.value)} className='flex-1' placeholder='Add descriptions(Bob Love)' type="text" />
             </div>
           </div>
@@ -506,7 +519,7 @@ function App() {
         freeTime > 0 && <div className={sty.cData}>
           <div className={sty.number}>{freeTime}</div>
           <div className={sty.title}>Cryptopunks-sign users</div>
-          
+
         </div>
       }
 
