@@ -363,7 +363,11 @@ function App() {
 
   return (
     <div className={sty.app}>
-
+      <div className={cn(sty.header, 'flex-r')}>
+        <div onClick={() => window.open('https://github.com/CryptoPunksSign')}>Github</div>
+        <div onClick={() => window.open('https://mobile.twitter.com/CryptoPunksSign')}>Twitter</div>
+        <div onClick={() => window.open('https://larvalabs.com/cryptopunks')}>CryptoPunks</div>
+      </div>
       <div className={sty.nav}>
         <div className={cn('flex-m')}>
           <div className={cn(sty.title, 'flex-1')}>CryptoPunks-Sign</div>
@@ -500,8 +504,9 @@ function App() {
       </div>
       {
         freeTime > 0 && <div className={sty.cData}>
-          <div className={sty.title}>Encrypted punk users who have received it for free</div>
           <div className={sty.number}>{freeTime}</div>
+          <div className={sty.title}>Encrypted punk users who have received it for free</div>
+          
         </div>
       }
 
