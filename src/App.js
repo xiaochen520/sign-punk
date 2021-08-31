@@ -128,7 +128,7 @@ function App() {
     setSignList([]);
     setFreeTime(0);
     if (!account) return;
-    if (chainId != 4) return;
+    if (chainId != 1) return;
     const contract = getConstract(SIGN_CONTRACT, SIGN_ABI, window.ethereum, account);
 
     //get free number
@@ -253,7 +253,7 @@ function App() {
       return;
     }
 
-    if (chainId != 4) {
+    if (chainId != 1) {
       setTipText('Please switch to the Main network');
       setTipModal(true);
       return;
@@ -295,7 +295,7 @@ console.log(11111,freeSignText)
       return;
     }
 
-    if (chainId != 4) {
+    if (chainId != 1) {
       setTipText('Please switch to the Main network');
       setTipModal(true);
       return;
@@ -321,7 +321,7 @@ console.log(11111,freeSignText)
       return;
     }
 
-    if (chainId != 4) {
+    if (chainId != 1) {
       setTipText('Please switch to the Main network');
       setTipModal(true);
       return;
