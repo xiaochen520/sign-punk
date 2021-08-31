@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import mergeImages from './libs/mergeImages';
+import axios from 'axios';
 import { formatUnits, parseUnits } from '@ethersproject/units';
 import { create } from 'ipfs-http-client';
 import sty from './App.module.scss';
@@ -43,6 +44,10 @@ function App() {
   const [tipModal, setTipModal] = useState(false);
   const [tipText, setTipText] = useState('');
 
+  const [updateTab, setUpdateTab] = useState(0);
+
+  const [signList, setSignList] = useState([]);
+
   //connect
   async function connect() {
     const addresses = await window.ethereum.request({
@@ -53,6 +58,26 @@ function App() {
 
     setAccount(addresses[0]);
     setChainId(chainId);
+  }
+
+  async function getSignCardList(contract) {
+    let arr = [];
+    let total = await contract.callStatic.totalSupply();
+    for (let i = 1; i <= total; i++) {
+      let punkSign = await contract.callStatic.getpunksInfo(total);
+
+      let signImg = await axios.get(punkSign.meta);
+
+      let obj = {
+        image: signImg.data.image,
+        name: signImg.data.name,
+        notes: punkSign.notes,
+        twitter: punkSign.twitter
+      }
+      arr.push(obj);
+    }
+
+    setSignList(arr);
   }
 
   //init metamsk
@@ -95,13 +120,18 @@ function App() {
 
   useEffect(() => {
     if (!account) return;
+    if (chainId != 4) return;
     const contract = getConstract(SIGN_CONTRACT, SIGN_ABI, window.ethereum, account);
 
+    //get free number
     contract.callStatic.getpunks().then(res => {
       setFreeTime(res.toNumber())
     });
 
-  }, [account]);
+    //get card
+    getSignCardList(contract);
+
+  }, [account, chainId]);
 
   //random create
   async function randomCreate(contract, uri, capIndex) {
@@ -227,8 +257,8 @@ function App() {
       return;
     }
 
-    if (!freeSignText) {
-      alert('请输入签名');
+    if (!/^[A-Za-z0-9]{0,7}$/.test(signText)) {
+      alert('只能输入不大于7位数的字母和数字');
       return;
     }
 
@@ -261,8 +291,8 @@ function App() {
       return;
     }
 
-    if (!signText) {
-      alert('请输入签名');
+    if (!/^[A-Za-z0-9]{0,7}$/.test(signText)) {
+      alert('只能输入不大于7位数的字母和数字');
       return;
     }
 
@@ -274,25 +304,61 @@ function App() {
   async function updateDraw() {
     if (updateLoad) return;
 
+    if (!hasEthereum) {
+      setTipText('请先安装metamask钱包并切换到主网');
+      setTipModal(true);
+      return;
+    }
+
+    if (chainId != 4) {
+      setTipText('请切换到主网');
+      setTipModal(true);
+      return;
+    }
+
     if (!uBeforeSignText) {
       alert('请输入签名punk编号');
       return;
     }
 
-    if (!uSignText) {
-      alert('请输入签名');
-      return;
-    }
     setUpdateLoad(true);
 
     const contract = getConstract(SIGN_CONTRACT, SIGN_ABI, window.ethereum, account);
-    let cap = await contract.callStatic.getpunksHat(uBeforeSignText);
 
-    createSignImg('update', cap.toNumber());
+    if (updateTab === 0) {
+      if (!/^[A-Za-z0-9]{0,7}$/.test(signText)) {
+        alert('请输入签名');
+        setUpdateLoad(false);
+        return;
+      }
+      let cap = await contract.callStatic.getpunksHat(uBeforeSignText);
+
+      createSignImg('update', cap.toNumber());
+    }
+
+    if (updateTab === 1) {
+      contract.updatePunksTwitter(uBeforeSignText, uTwitter).then(res => {
+        setUpdateLoad(false);
+        setTipText('交易已发送，正在链上进行');
+        setTipModal(true);
+      }).catch(err => setUpdateLoad(false))
+    }
+
+    if (updateTab === 2) {
+      contract.updatePunksNote(uBeforeSignText, uNote).then(res => {
+        setUpdateLoad(false);
+        setTipText('交易已发送，正在链上进行');
+        setTipModal(true);
+      }).catch(err => setUpdateLoad(false))
+    }
   }
 
   return (
     <div className={sty.app}>
+      <div className={cn(sty.account, 'tr')}>
+        <div className={sty.outer}>
+          Account: {account || 'Disconnect'}</div>
+      </div>
       <div className={sty.nav}>
         <div className={sty.title}>CryptoPunks-Sign</div>
         <div className={sty.desc}>10,000 unique collectible characters with proof of ownership stored on the Ethereum blockchain. The project that inspired the modern CryptoArt movement. Selected press and appearances include Mashable, CNBC, The Financial Times, Bloomberg, MarketWatch, The Paris Review, Salon, </div>
@@ -300,7 +366,7 @@ function App() {
       <div className={sty.banner}>
         <img src={bannerImg} alt="" />
       </div>
-      <div className={cn(sty.apply, 'flex flex-j')}>
+      <div className={cn(sty.apply, 'flex-m flex-j')}>
         <div className={sty.cardShow}>
           <div className={cn(sty.row, 'flex-m flex-j')}>
             <img src={headImg.head_1} alt="" />
@@ -320,24 +386,33 @@ function App() {
             <img src={headImg.head_11} alt="" />
             <img src={headImg.head_12} alt="" />
           </div>
+          <div className={cn(sty.row, 'flex-m flex-j')}>
+            <img src={headImg.head_13} alt="" />
+            <img src={headImg.head_14} alt="" />
+            <img src={headImg.head_15} alt="" />
+            <img src={headImg.head_16} alt="" />
+          </div>
         </div>
         <div className={sty.sideBox}>
-          <div className={cn(sty.title, 'tc')}>申领punk</div>
+          <div className={cn(sty.title, 'tc')}>Claim Your Punk</div>
           <div className={cn(sty.inputBox, 'flex flex-j')}>
-            <input value={punkIndex} onChange={e => setPunkIndex(e.target.value)} placeholder='请输入编号' type="text" />
-            <input value={freeSignText} onChange={e => setFreeSignText(e.target.value)} placeholder='请输入签名' type="text" />
+            <input value={punkIndex} onChange={e => setPunkIndex(e.target.value)} placeholder='Enter the number of CryptoPunks you own' type="text" />
           </div>
           <div className={sty.inputBox}>
-            <input style={{ width: '100%' }} value={freeNote} onChange={e => setFreeNote(e.target.value)} placeholder='请输入编号' type="text" />
+            <input value={freeSignText} onChange={e => setFreeSignText(e.target.value)} placeholder='Enter the signature' type="text" />
           </div>
           <div className={sty.inputBox}>
-            <input style={{ width: '100%' }} value={freeTwitter} onChange={e => setFreeTwitter(e.target.value)} placeholder='请输入编号' type="text" />
+            <input style={{ width: '100%' }} value={freeTwitter} onChange={e => setFreeTwitter(e.target.value)} placeholder='Enter a Twitter handle' type="text" />
+          </div>
+          <div className={sty.inputBox}>
+            <input style={{ width: '100%' }} value={freeNote} onChange={e => setFreeNote(e.target.value)} placeholder='Add descriptions： Such as Bob Love Alice forever' type="text" />
           </div>
           <div className={sty.tip}>
-            <div>Tip:</div>
-            <div>1.前100张用户免费领取</div>
-            <div>2.100张以后每张领取的费用是0.01ETH，随着人数增加，费用逐渐增加，最后一张Punk是50ETH</div>
-            <div>3.持有加密punks的用户，可以免费领取对应的签名版</div>
+            <div className={sty.s}>Tip:</div>
+            <div>1.The first 100 users receive the ticket free of charge</div>
+            <div>2.After 100 tickets, the cost of each is 0.01 ETH. With the increase of the number of people, the cost gradually increases, increasing by 0.01 ETH per 100 tickets</div>
+            <div>3.Users with encrypted punks can receive the corresponding signed version free of charge</div>
+            <div>4.Add Note: Get any graffiti you can put on your CryptoPunks-Sign, input any string, and make it your expression tool</div>
           </div>
 
           <button onClick={freeDraw} className={cn(sty.btn, 'flex-m flex-c')}>
@@ -348,15 +423,15 @@ function App() {
         </div>
       </div>
 
-      <div className={cn(sty.random, 'flex flex-j')}>
+      <div className={cn(sty.random, 'flex-m flex-j')}>
         <div className={sty.left}>
           <div className={sty.title}>newsletter</div>
-          <div className={sty.subTitle}>随机抽取</div>
+          <div className={sty.subTitle}>Random Sampling</div>
           <div className={cn(sty.inputOuter, 'flex-m')}>
             <div className={cn(sty.inputBox, 'flex-1')}>
-              <input value={signText} onChange={(e) => setSignText(e.target.value)} className='flex-1' placeholder='输入签名' type="text" />
-              <input value={signNote} onChange={(e) => setSignNote(e.target.value)} className='flex-1' placeholder='输入签名' type="text" />
-              <input value={signTwitter} onChange={(e) => setSignTwitter(e.target.value)} className='flex-1' placeholder='输入签名' type="text" />
+              <input value={signText} onChange={(e) => setSignText(e.target.value)} className='flex-1' placeholder='Enter the signature' type="text" />
+              <input value={signTwitter} onChange={(e) => setSignTwitter(e.target.value)} className='flex-1' placeholder='Enter a Twitter handle' type="text" />
+              <input value={signNote} onChange={(e) => setSignNote(e.target.value)} className='flex-1' placeholder='Add descriptions(Bob Love)' type="text" />
             </div>
 
             <button onClick={randomDraw} className={cn(sty.btn, 'flex-m flex-c')}>
@@ -371,39 +446,73 @@ function App() {
         </div>
       </div>
 
-      <div className={sty.update}>
-        <div className={cn(sty.inputOuter, 'flex-c')}>
-          <div className={cn(sty.inputBox)}>
-            <input value={uBeforeSignText} onChange={(e) => setUBeforeSignText(e.target.value)} className='flex-1' placeholder='输入签名punk标号' type="text" />
-            <input value={uSignText} onChange={(e) => setUSignText(e.target.value)} className='flex-1' placeholder='更新签名' type="text" />
-            <input value={uTwitter} onChange={(e) => setUTwitter(e.target.value)} className='flex-1' placeholder='twitter' type="text" />
-            <input value={uNote} onChange={(e) => setUNote(e.target.value)} className='flex-1' placeholder='note' type="text" />
+      <div className={cn(sty.update, 'flex flex-j')}>
+        <div className={sty.left}>
+          <div className={sty.title}>Update Signature</div>
+          <div className={sty.desc}>Signature update: The signature can be updated through smart contract to generate a new signature without changing other information. Changing the signature requires a rename fee, and other information updates do not require additional fees</div>
+          <div className={sty.desc}>Twitter update: The Twitter handle can be updated through a smart contract to generate a new Twitter handle without changing other information</div>
+          <div className={sty.desc}>Update Note: You can do any graffiti on your CryptoPunks-Sign, and you can also update it through a smart contract to generate new information without changing other information. You can declare your love, express your attitude, or just say something irrelevant. Nonsense, whatever, as long as you like it!</div>
+        </div>
+        <div className={sty.side}>
+          <div className={cn(sty.tabs, 'flex-m')}>
+            <div onClick={() => setUpdateTab(0)} className={cn(sty.tab, { [sty.active]: updateTab === 0 })}>update signature</div>
+            <div onClick={() => setUpdateTab(1)} className={cn(sty.tab, { [sty.active]: updateTab === 1 })}>update twitter</div>
+            <div onClick={() => setUpdateTab(2)} className={cn(sty.tab, { [sty.active]: updateTab === 2 })}>update note</div>
+          </div>
+          <div style={{ display: updateTab === 0 ? 'flex' : 'none' }} className={cn(sty.inputOuter, 'flex-c')}>
+            <div className={cn(sty.inputBox)}>
+              <input value={uBeforeSignText} onChange={(e) => setUBeforeSignText(e.target.value)} className='flex-1' placeholder='Enter the number of CryptoPunks-Sign you own' type="text" />
+              <input value={uSignText} onChange={(e) => setUSignText(e.target.value)} className='flex-1' placeholder='Enter the signature' type="text" />
+            </div>
           </div>
 
+          <div style={{ display: updateTab === 1 ? 'flex' : 'none' }} className={cn(sty.inputOuter, 'flex-c')}>
+            <div className={cn(sty.inputBox)}>
+              <input value={uBeforeSignText} onChange={(e) => setUBeforeSignText(e.target.value)} className='flex-1' placeholder='Enter the number of CryptoPunks-Sign you own' type="text" />
+              <input value={uTwitter} onChange={(e) => setUTwitter(e.target.value)} className='flex-1' placeholder='Enter a Twitter handle' type="text" />
+            </div>
+          </div>
+
+          <div style={{ display: updateTab === 2 ? 'flex' : 'none' }} className={cn(sty.inputOuter, 'flex-c')}>
+            <div className={cn(sty.inputBox)}>
+              <input value={uBeforeSignText} onChange={(e) => setUBeforeSignText(e.target.value)} className='flex-1' placeholder='Enter the number of CryptoPunks-Sign you own' type="text" />
+              <input value={uNote} onChange={(e) => setUNote(e.target.value)} className='flex-1' placeholder='Add descriptions(Bob Love)' type="text" />
+            </div>
+          </div>
+          <button onClick={updateDraw} className={cn(sty.btn, 'flex-m flex-c')}>
+            {
+              updateLoad ? <Loading /> : <span>Update</span>
+            }
+          </button>
         </div>
-        <button onClick={updateDraw} className={cn(sty.btn, 'flex-m flex-c')}>
-          {
-            updateLoad ? <Loading /> : <span>Update</span>
-          }
-        </button>
       </div>
       {
         freeTime > 0 && <div className={sty.cData}>
-          <div className={sty.title}>已经免费领取的加密朋克用户</div>
+          <div className={sty.title}>Encrypted punk users who have received it for free</div>
           <div className={sty.number}>{freeTime}</div>
         </div>
       }
 
 
-      {/* <div className={sty.signed}>
-        <div className={sty.title}>已经开启的加密签名</div>
-        <div>
-          <div>
-            <img src="" alt="" />
-            <div>Elon Mask</div>
+      <div className={sty.signed}>
+        <div className={sty.title}>Encrypted punk signature that has been turned on</div>
+        <div className={cn(sty.box, 'flex')}>
+          <div className={sty.outer}>
+            {
+              signList.map(e => (
+                <div className={sty.item}>
+                  <img className={sty.image} src={e.image} alt="" />
+                  <div className={sty.name}>{e.name}</div>
+                  <div className={sty.twitter}>twitter:{e.twitter}</div>
+                  <div className={sty.notes}>notes:{e.notes}</div>
+                </div>
+              ))
+            }
+
           </div>
+
         </div>
-      </div> */}
+      </div>
 
       <Modal show={tipModal} onHide={() => setTipModal(false)}>
         <div className={sty.accountModal}>

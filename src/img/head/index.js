@@ -10,7 +10,11 @@ import head_9 from './head9.png';
 import head_10 from './head10.png';
 import head_11 from './head11.png';
 import head_12 from './head12.png';
+import head_13 from './head13.png';
+import head_14 from './head14.png';
+import head_15 from './head15.png';
+import head_16 from './head16.png';
 
 export default {
-    head_1, head_2, head_3, head_4, head_5, head_6, head_7, head_8, head_9, head_10, head_11, head_12
+    head_1, head_2, head_3, head_4, head_5, head_6, head_7, head_8, head_9, head_10, head_11, head_12, head_13, head_14, head_15, head_16
 }

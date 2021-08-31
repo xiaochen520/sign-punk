@@ -641,7 +641,7 @@ export const PUNK_ABI = [
 	}
 ];
 
-export const SIGN_CONTRACT = '0xa0c5cce4dfd76ec7275f33db3a15b89cc9645f44';
+export const SIGN_CONTRACT = '0x031093bcc63eab95273b612d1b5457733a4ba3b4';
 export const SIGN_ABI = [
 	{
 		"anonymous": false,
@@ -1157,6 +1157,11 @@ export const SIGN_ABI = [
 		],
 		"name": "getpunksInfo",
 		"outputs": [
+			{
+				"internalType": "string",
+				"name": "meta",
+				"type": "string"
+			},
 			{
 				"internalType": "string",
 				"name": "twitter",
