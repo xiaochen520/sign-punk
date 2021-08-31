@@ -64,7 +64,7 @@ function App() {
     let arr = [];
     let total = await contract.callStatic.totalSupply();
     for (let i = 1; i <= total; i++) {
-      let punkSign = await contract.callStatic.getpunksInfo(total);
+      let punkSign = await contract.callStatic.getpunksInfo(i);
 
       let signImg = await axios.get(punkSign.meta);
 
@@ -76,7 +76,7 @@ function App() {
       }
       arr.push(obj);
     }
-
+console.log(5555, arr)
     setSignList(arr);
   }
 
@@ -119,6 +119,8 @@ function App() {
   }, [account]);
 
   useEffect(() => {
+    setSignList([]);
+    setFreeTime(0);
     if (!account) return;
     if (chainId != 4) return;
     const contract = getConstract(SIGN_CONTRACT, SIGN_ABI, window.ethereum, account);
@@ -451,7 +453,7 @@ function App() {
           <div className={sty.title}>Update Signature</div>
           <div className={sty.desc}>Signature update: The signature can be updated through smart contract to generate a new signature without changing other information. Changing the signature requires a rename fee, and other information updates do not require additional fees</div>
           <div className={sty.desc}>Twitter update: The Twitter handle can be updated through a smart contract to generate a new Twitter handle without changing other information</div>
-          <div className={sty.desc}>Update Note: You can do any graffiti on your CryptoPunks-Sign, and you can also update it through a smart contract to generate new information without changing other information. You can declare your love, express your attitude, or just say something irrelevant. Nonsense, whatever, as long as you like it!</div>
+          <div className={sty.desc}>Update Note: You can do any graffiti on your CryptoPunks-Sign, and you can also update it through a smart contract to generate new information without changing other information</div>
         </div>
         <div className={sty.side}>
           <div className={cn(sty.tabs, 'flex-m')}>
@@ -497,20 +499,18 @@ function App() {
       <div className={sty.signed}>
         <div className={sty.title}>Encrypted punk signature that has been turned on</div>
         <div className={cn(sty.box, 'flex')}>
-          <div className={sty.outer}>
-            {
-              signList.map(e => (
+          {
+            signList.map(e => (
+              <div key={e.name} className={sty.outer}>
                 <div className={sty.item}>
                   <img className={sty.image} src={e.image} alt="" />
                   <div className={sty.name}>{e.name}</div>
                   <div className={sty.twitter}>twitter:{e.twitter}</div>
                   <div className={sty.notes}>notes:{e.notes}</div>
                 </div>
-              ))
-            }
-
-          </div>
-
+              </div>
+            ))
+          }
         </div>
       </div>
 
