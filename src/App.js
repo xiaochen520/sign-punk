@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import mergeImages from './libs/mergeImages';
 import axios from 'axios';
+import { Web3Provider } from '@ethersproject/providers';
 import { formatUnits, parseUnits } from '@ethersproject/units';
 import { create } from 'ipfs-http-client';
 import sty from './App.module.scss';
 import cn from 'classnames';
-import { getConstract, getRandomInt, formatPunkIndex, dataURLtoFile } from './utils';
+import { getConstract, getRandomInt, formatPunkIndex, dataURLtoFile, formatNum } from './utils';
 import { PUNK_CONTRACT, PUNK_ABI, SIGN_CONTRACT, SIGN_ABI, PUNK_IMG, CAP_IMG } from './constant';
 
 import Modal from './components/Modal';
@@ -48,6 +49,8 @@ function App() {
 
   const [signList, setSignList] = useState([]);
 
+  const [ethBalance, setEthBalance] = useState(0);
+
   //connect
   async function connect() {
     const addresses = await window.ethereum.request({
@@ -56,8 +59,11 @@ function App() {
 
     const chainId = await window.ethereum.request({ method: 'eth_chainId' })
 
+    const balance = await new Web3Provider(window.ethereum).getBalance(addresses[0])
+  
     setAccount(addresses[0]);
-    setChainId(chainId);
+    setChainId(parseInt(chainId));
+    setEthBalance(formatNum(formatUnits(balance), 3));
   }
 
   async function getSignCardList(contract) {
@@ -86,7 +92,7 @@ console.log(5555, arr)
       setHasEthereum(true);
       connect();
     }
-  }, []);
+  }, [account, chainId]);
 
 
   //add eventListener
@@ -358,6 +364,7 @@ console.log(5555, arr)
   return (
     <div className={sty.app}>
       <div className={cn(sty.account, 'tr')}>
+        <div style={{marginRight: 10}} className={sty.outer}>{ethBalance}ETH</div>
         <div className={sty.outer}>
           Account: {account || 'Disconnect'}</div>
       </div>

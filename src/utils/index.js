@@ -33,3 +33,15 @@ export function dataURLtoFile(dataurl, filename) {//将base64转换为文件
     }
     return new File([u8arr], filename, { type: mime });
 }
+
+export function formatNum(num, dec) {
+    num = num.toString();
+    let index = num.indexOf('.');
+    if(index !== -1) {
+        num = num.substring(0, dec + index + 1);
+    } else {
+        num = num.substring(0);
+    }
+
+    return parseFloat(num).toFixed(dec);
+}
