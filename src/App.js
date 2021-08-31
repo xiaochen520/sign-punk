@@ -253,6 +253,11 @@ function App() {
       return;
     }
 
+    if (!account) {
+      connect();
+      return;
+    }
+
     if (chainId != 1) {
       setTipText('Please switch to the Main network');
       setTipModal(true);
@@ -294,7 +299,10 @@ console.log(11111,freeSignText)
       setTipModal(true);
       return;
     }
-
+    if (!account) {
+      connect();
+      return;
+    }
     if (chainId != 1) {
       setTipText('Please switch to the Main network');
       setTipModal(true);
@@ -320,7 +328,10 @@ console.log(11111,freeSignText)
       setTipModal(true);
       return;
     }
-
+    if (!account) {
+      connect();
+      return;
+    }
     if (chainId != 1) {
       setTipText('Please switch to the Main network');
       setTipModal(true);
