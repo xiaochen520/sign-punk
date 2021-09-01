@@ -208,7 +208,7 @@ function App() {
       const imgUrl = `https://ipfs.infura.io/ipfs/${ipfsHash.path}`;
       const tokenURI = JSON.stringify({
         name: `${capText}#${number + 1}`,
-        description: 'CryptoPunksSign add signature attributes to the original CryptoPunks 10,000 punk avatars, and users who hold cryptopunks can claim them for free. Users with CryptoPunksSign can change their signature and bind it to Twitter.',
+        description: 'CryptoPunksSign is a CryptoPunks with signature attributes, with a total of 10,000. The top 100 can be collected for free. CryptoPunksSign can change their signature and tie it to Twitter.',
         image: imgUrl,
         attributes: []
       });
@@ -398,6 +398,7 @@ function App() {
       <div className={sty.banner}>
         <img src={bannerImg} alt="" />
       </div>
+      
       <div className={cn(sty.apply, 'flex-m flex-j')}>
         <div className={sty.cardShow}>
           <div className={cn(sty.row, 'flex-m flex-j')}>
