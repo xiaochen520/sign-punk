@@ -208,7 +208,7 @@ function App() {
       const imgUrl = `https://ipfs.infura.io/ipfs/${ipfsHash.path}`;
       const tokenURI = JSON.stringify({
         name: `${capText}#${number + 1}`,
-        description: 'CryptoPunksSign add signature attributes to the original CryptoPunks 10,000 punk avatars, and users who hold cryptopunks can claim them for free. Users with CryptoPunksSign can change their signature and bind it to Twitter.',
+        description: 'CryptoPunksSign is a CryptoPunks with signature attributes, with a total of 10,000. The top 100 can be collected for free. CryptoPunksSign can change their signature and tie it to Twitter.',
         image: imgUrl,
         attributes: []
       });
@@ -382,10 +382,32 @@ console.log(11111,freeSignText)
               Account: {account || 'Disconnect'}</div>
           </div>
         </div>
-        <div className={sty.desc}>CryptoPunksSign add signature attributes to the original CryptoPunks 10,000 punk avatars, and users who hold cryptopunks can claim them for free. Users with CryptoPunksSign can change their signature and bind it to Twitter.</div>
+        <div className={sty.desc}>CryptoPunksSign is a CryptoPunks with signature attributes, with a total of 10,000. The top 100 can be collected for free. CryptoPunksSign can change their signature and tie it to Twitter.</div>
       </div>
       <div className={sty.banner}>
         <img src={bannerImg} alt="" />
+      </div>
+      <div className={cn(sty.random, 'flex-m flex-j')}>
+        <div className={sty.left}>
+          <div className={sty.title}>newsletter</div>
+          <div className={sty.subTitle}>Random Sampling</div>
+          <div className={cn(sty.inputOuter, 'flex-m')}>
+            <div className={cn(sty.inputBox, 'flex-1')}>
+              <input value={signText} onChange={(e) => setSignText(e.target.value)} className='flex-1' placeholder='Enter the signature' type="text" />
+              <input value={signTwitter} onChange={(e) => setSignTwitter(e.target.value)} className='flex-1' placeholder='Enter a Twitter handle' type="text" />
+              <input value={signNote} onChange={(e) => setSignNote(e.target.value)} className='flex-1' placeholder='Add descriptions(Bob Love)' type="text" />
+            </div>
+
+            <button onClick={randomDraw} className={cn(sty.btn, 'flex-m flex-c')}>
+              {
+                randomLoad ? <Loading /> : <span>→</span>
+              }
+            </button>
+          </div>
+        </div>
+        <div className={sty.side}>
+          <img src={radomImg} alt="" />
+        </div>
       </div>
       <div className={cn(sty.apply, 'flex-m flex-j')}>
         <div className={sty.cardShow}>
@@ -444,28 +466,7 @@ console.log(11111,freeSignText)
         </div>
       </div>
 
-      <div className={cn(sty.random, 'flex-m flex-j')}>
-        <div className={sty.left}>
-          <div className={sty.title}>newsletter</div>
-          <div className={sty.subTitle}>Random Sampling</div>
-          <div className={cn(sty.inputOuter, 'flex-m')}>
-            <div className={cn(sty.inputBox, 'flex-1')}>
-              <input value={signText} onChange={(e) => setSignText(e.target.value)} className='flex-1' placeholder='Enter the signature' type="text" />
-              <input value={signTwitter} onChange={(e) => setSignTwitter(e.target.value)} className='flex-1' placeholder='Enter a Twitter handle' type="text" />
-              <input value={signNote} onChange={(e) => setSignNote(e.target.value)} className='flex-1' placeholder='Add descriptions(Bob Love)' type="text" />
-            </div>
-
-            <button onClick={randomDraw} className={cn(sty.btn, 'flex-m flex-c')}>
-              {
-                randomLoad ? <Loading /> : <span>→</span>
-              }
-            </button>
-          </div>
-        </div>
-        <div className={sty.side}>
-          <img src={radomImg} alt="" />
-        </div>
-      </div>
+      
 
       <div className={cn(sty.update, 'flex flex-j')}>
         <div className={sty.left}>
