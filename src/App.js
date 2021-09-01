@@ -432,15 +432,15 @@ function App() {
             <input value={punkIndex} onChange={e => setPunkIndex(e.target.value)} placeholder='The number of CryptoPunks you own(such as "002")' type="text" />
           </div> */}
           <div className={sty.inputBox}>
-            <input value={signText} onChange={(e) => setSignText(e.target.value)} placeholder='Enter the signature' type="text" />
+            <input value={signText} onChange={(e) => setSignText(e.target.value)} placeholder='Enter the signature(options)' type="text" />
             {/* <input value={freeSignText} onChange={e => setFreeSignText(e.target.value)} placeholder='Enter the signature' type="text" /> */}
           </div>
           <div className={sty.inputBox}>
-            <input value={signTwitter} onChange={(e) => setSignTwitter(e.target.value)} placeholder='Enter a Twitter handle' type="text" />
+            <input value={signTwitter} onChange={(e) => setSignTwitter(e.target.value)} placeholder='Enter a Twitter handle(options)' type="text" />
             {/* <input style={{ width: '100%' }} value={freeTwitter} onChange={e => setFreeTwitter(e.target.value)} placeholder='Enter a Twitter handle' type="text" /> */}
           </div>
           <div className={sty.inputBox}>
-            <input value={signNote} onChange={(e) => setSignNote(e.target.value)} placeholder='Add descriptions(Bob Love)' type="text" />
+            <input value={signNote} onChange={(e) => setSignNote(e.target.value)} placeholder='Add descriptions(options: Bob Love)' type="text" />
             {/* <input style={{ width: '100%' }} value={freeNote} onChange={e => setFreeNote(e.target.value)} placeholder='Add descriptions： Such as Bob Love Alice forever' type="text" /> */}
           </div>
           <div className={sty.tip}>
