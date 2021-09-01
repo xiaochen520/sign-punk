@@ -269,7 +269,7 @@ function App() {
       setTipModal(true);
       return;
     }
-console.log(11111,freeSignText)
+    console.log(11111, freeSignText)
     if (!/^[A-Za-z0-9]{0,7}$/.test(freeSignText)) {
       setTipText('You can enter 7 letters or numbers at most');
       setTipModal(true);
@@ -339,7 +339,7 @@ console.log(11111,freeSignText)
     }
 
     if (!uBeforeSignText) {
-      setTipText('Please enter your signature');
+      setTipText('Please enter your CryptoPunks-Sign number');
       setTipModal(true);
       return;
     }
@@ -393,7 +393,7 @@ console.log(11111,freeSignText)
               Account: {account || 'Disconnect'}</div>
           </div>
         </div>
-        <div className={sty.desc}>CryptoPunksSign add signature attributes to the original CryptoPunks 10,000 punk avatars, and users who hold cryptopunks can claim them for free. Users with CryptoPunksSign can change their signature and bind it to Twitter.</div>
+        <div className={sty.desc}>CryptoPunksSign is a CryptoPunks with signature attributes, with a total of 10,000. The top 100 can be collected for free. CryptoPunksSign can change their signature and bind it to Twitter.</div>
       </div>
       <div className={sty.banner}>
         <img src={bannerImg} alt="" />
@@ -426,36 +426,44 @@ console.log(11111,freeSignText)
           </div>
         </div>
         <div className={sty.sideBox}>
-          <div className={cn(sty.title, 'tc')}>Claim Your Punk</div>
-          <div className={cn(sty.inputBox, sty.require, 'flex flex-j')}>
+          <div className={cn(sty.title, 'tc')}>Get Free</div>
+          {/* <div className={cn(sty.inputBox, sty.require, 'flex flex-j')}>
             <input value={punkIndex} onChange={e => setPunkIndex(e.target.value)} placeholder='The number of CryptoPunks you own(such as "002")' type="text" />
+          </div> */}
+          <div className={sty.inputBox}>
+            <input value={signText} onChange={(e) => setSignText(e.target.value)} placeholder='Enter the signature' type="text" />
+            {/* <input value={freeSignText} onChange={e => setFreeSignText(e.target.value)} placeholder='Enter the signature' type="text" /> */}
           </div>
           <div className={sty.inputBox}>
-            <input value={freeSignText} onChange={e => setFreeSignText(e.target.value)} placeholder='Enter the signature' type="text" />
+            <input value={signTwitter} onChange={(e) => setSignTwitter(e.target.value)} placeholder='Enter a Twitter handle' type="text" />
+            {/* <input style={{ width: '100%' }} value={freeTwitter} onChange={e => setFreeTwitter(e.target.value)} placeholder='Enter a Twitter handle' type="text" /> */}
           </div>
           <div className={sty.inputBox}>
-            <input style={{ width: '100%' }} value={freeTwitter} onChange={e => setFreeTwitter(e.target.value)} placeholder='Enter a Twitter handle' type="text" />
-          </div>
-          <div className={sty.inputBox}>
-            <input style={{ width: '100%' }} value={freeNote} onChange={e => setFreeNote(e.target.value)} placeholder='Add descriptions： Such as Bob Love Alice forever' type="text" />
+            <input value={signNote} onChange={(e) => setSignNote(e.target.value)} placeholder='Add descriptions(Bob Love)' type="text" />
+            {/* <input style={{ width: '100%' }} value={freeNote} onChange={e => setFreeNote(e.target.value)} placeholder='Add descriptions： Such as Bob Love Alice forever' type="text" /> */}
           </div>
           <div className={sty.tip}>
-            <div className={sty.s}>Tip:</div>
-            <div>1.The first 100 users receive the ticket free of charge</div>
-            <div>2.After 100 tickets, the cost of each is 0.01 ETH. With the increase of the number of people, the cost gradually increases, increasing by 0.01 ETH per 100 tickets</div>
-            <div>3.Users with encrypted punks can receive the corresponding signed version free of charge</div>
-            <div>4.Add Note: Get any graffiti you can put on your CryptoPunks-Sign, input any string, and make it your expression tool</div>
+            {/* <div className={sty.s}>Tip:</div> */}
+            <div>1.The first 100 users receive the ticket free of charge.</div>
+            <div>2.After 100 tickets, the cost of each is 0.01 ETH. With the increase of the number of people, the cost gradually increases, increasing by 0.01 ETH per 100 tickets.</div>
+            {/* <div>3.Users with encrypted punks can receive the corresponding signed version free of charge</div> */}
+            {/* <div>4.Add Note: Get any graffiti you can put on your CryptoPunks-Sign, input any string, and make it your expression tool</div> */}
           </div>
 
-          <button onClick={freeDraw} className={cn(sty.btn, 'flex-m flex-c')}>
+          {/* <button onClick={freeDraw} className={cn(sty.btn, 'flex-m flex-c')}>
             {
               freeLoad ? <Loading /> : <span>CLAIM</span>
+            }
+          </button> */}
+          <button onClick={randomDraw} className={cn(sty.btn, 'flex-m flex-c')}>
+            {
+              randomLoad ? <Loading /> : <span>Claim</span>
             }
           </button>
         </div>
       </div>
 
-      <div className={cn(sty.random, 'flex-m flex-j')}>
+      {/* <div className={cn(sty.random, 'flex-m flex-j')}>
         <div className={sty.left}>
           <div className={sty.title}>newsletter</div>
           <div className={sty.subTitle}>Random Sampling</div>
@@ -476,7 +484,7 @@ console.log(11111,freeSignText)
         <div className={sty.side}>
           <img src={radomImg} alt="" />
         </div>
-      </div>
+      </div> */}
 
       <div className={cn(sty.update, 'flex flex-j')}>
         <div className={sty.left}>
