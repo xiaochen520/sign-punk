@@ -15,6 +15,7 @@ import Loading from './components/Loading';
 import bannerImg from './img/banner.png';
 import radomImg from './img/radom-card.png';
 import headImg from './img/head';
+import capImg from './img/cap/cap-1.svg';
 
 
 function App() {
@@ -50,6 +51,7 @@ function App() {
   const [signList, setSignList] = useState([]);
 
   const [ethBalance, setEthBalance] = useState(0);
+  const [prevCap, setPrevCap] = useState('');
 
   //connect
   async function connect() {
@@ -88,6 +90,7 @@ function App() {
 
   //init metamsk
   useEffect(() => {
+    // testCap();
     if (typeof window.ethereum !== 'undefined') {
       setHasEthereum(true);
       connect();
@@ -172,6 +175,12 @@ function App() {
     }).catch(err => setUpdateLoad(false))
   }
 
+  //test cap
+  async function testCap() {
+    let b64 = await mergeImages([`${PUNK_IMG}4446.png`, `${CAP_IMG}1.svg`], { crossOrigin: '*' }, '', '4446');
+    setPrevCap(b64)
+  }
+
   //createImg
   async function createSignImg(type, cap) {
     let number;
@@ -199,7 +208,7 @@ function App() {
       capText = uSignText;
     }
 
-    let b64 = await mergeImages([`${PUNK_IMG}${signIndex}.png`, `${CAP_IMG}${capIndex}.png`], { crossOrigin: '*' }, capText);
+    let b64 = await mergeImages([`${PUNK_IMG}${signIndex}.png`, `${CAP_IMG}${capIndex}.svg`], { crossOrigin: '*' }, capText, signIndex);
 
     const imgFile = dataURLtoFile(b64, `cryptopunkssign${signIndex}.png`);
 
@@ -379,6 +388,7 @@ function App() {
 
   return (
     <div className={sty.app}>
+      {/* <img src={prevCap} alt="" /> */}
       <div className={cn(sty.header, 'flex-r')}>
         <div onClick={() => window.open('https://github.com/CryptoPunksSign')}>Github</div>
         <div onClick={() => window.open('https://mobile.twitter.com/CryptoPunksSign')}>Twitter</div>

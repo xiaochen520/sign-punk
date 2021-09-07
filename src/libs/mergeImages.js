@@ -1,5 +1,5 @@
 
-
+import { withCap } from '../constant';
 // Defaults
 const defaultOptions = {
 	format: 'image/png',
@@ -11,7 +11,7 @@ const defaultOptions = {
 };
 
 // Return Promise
-let mergeImages = function (sources, options, text) {
+let mergeImages = function (sources, options, text, signIndex) {
 	if (sources === void 0) sources = [];
 	if (options === void 0) options = {};
 
@@ -50,17 +50,49 @@ let mergeImages = function (sources, options, text) {
 				canvas.width = getSize('width');
 				canvas.height = getSize('height');
 
-				// Draw images to canvas
-				images.forEach(function (image) {
-					ctx.globalAlpha = image.opacity ? image.opacity : 1;
-					return ctx.drawImage(image.img, image.x || 0, image.y || 0);
-				});
+				const hasCap = withCap.findIndex(e => e == signIndex);
 
-				if (text) {
+
+				if (hasCap >= 0) {
+					ctx.globalAlpha = images[0].opacity ? images[0].opacity : 1;
+					ctx.drawImage(images[0].img, images[0].x || 0, images[0].y || 0);
+				} else {
+					// Draw images to canvas
+					images.forEach(function (image) {
+						ctx.globalAlpha = image.opacity ? image.opacity : 1;
+						return ctx.drawImage(image.img, image.x || 0, image.y || 0);
+					});
+				}
+
+
+
+
+				if (hasCap >= 0) {
+					if (text) {
+						ctx.beginPath();
+						ctx.moveTo(0, 130);
+						ctx.lineTo(130, 0);
+						ctx.lineTo(80, 0);
+						ctx.lineTo(0, 80);
+						ctx.closePath();
+						ctx.fillStyle = "#13C2C2";
+						ctx.fill();
+						ctx.restore();
+						ctx.beginPath();
+						ctx.fillStyle = "#000";
+						ctx.font = "28px SnaredrumZeroNbp";
+						ctx.textAlign = "center";
+						ctx.textBaseline = "middle";
+						ctx.translate(-30, -20);
+						ctx.rotate(-45 * Math.PI / 180);
+						ctx.fillText(text, 10, 100);
+					}
+				} else {
+					ctx.fillStyle = "#000";
 					ctx.font = "28px SnaredrumZeroNbp";
 					ctx.textAlign = "center";
 					ctx.textBaseline = "middle";
-					ctx.fillText(text, 164, 70);
+					ctx.fillText(text, 164, 80);
 				}
 
 				if (options.Canvas && options.format === 'image/jpeg') {
