@@ -147,8 +147,9 @@ function App() {
   //random create
   async function randomCreate(contract, uri, capIndex) {
     let price = await contract.callStatic.getMintPrice();
-
+    console.log(111, uri);
     contract.mintCryptoPunksSign(capIndex, uri, signTwitter, signNote, { from: account, gasLimit: '990000', value: price }).then(res => {
+      
       setRandomLoad(false);
       setTipText('The transaction has been sent on the chain');
       setTipModal(true);
@@ -437,7 +438,7 @@ function App() {
           </div>
         </div>
         <div className={sty.sideBox}>
-          <div className={cn(sty.title, 'tc')}>Get</div>
+          <div className={cn(sty.title, 'tc')}>Mint</div>
           {/* <div className={cn(sty.inputBox, sty.require, 'flex flex-j')}>
             <input value={punkIndex} onChange={e => setPunkIndex(e.target.value)} placeholder='The number of CryptoPunks you own(such as "002")' type="text" />
           </div> */}
