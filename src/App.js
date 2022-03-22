@@ -398,7 +398,7 @@ function App() {
         <div className={cn('flex-m')}>
           <div className={cn(sty.title, 'flex-1')}>CryptoPunks-Sign</div>
           <div className={cn(sty.account, 'tr')}>
-            {/* <div style={{ marginRight: 10 }} className={sty.outer}>{ethBalance}ETC</div> */}
+            <div style={{ marginRight: 10 }} className={sty.outer}>{ethBalance}ETC</div>
             <div className={sty.outer}>
               Account: {account || 'Disconnect'}</div>
           </div>
