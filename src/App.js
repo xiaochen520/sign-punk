@@ -398,7 +398,7 @@ function App() {
         <div className={cn('flex-m')}>
           <div className={cn(sty.title, 'flex-1')}>CryptoPunks-Sign</div>
           <div className={cn(sty.account, 'tr')}>
-            <div style={{ marginRight: 10 }} className={sty.outer}>{ethBalance}ETH</div>
+            {/* <div style={{ marginRight: 10 }} className={sty.outer}>{ethBalance}ETC</div> */}
             <div className={sty.outer}>
               Account: {account || 'Disconnect'}</div>
           </div>
@@ -456,7 +456,7 @@ function App() {
           <div className={sty.tip}>
             {/* <div className={sty.s}>Tip:</div> */}
             <div>1.The first 100 users receive the ticket free of charge.</div>
-            <div>2.After 100 tickets, the cost of each is 0.01 ETH. With the increase of the number of people, the cost gradually increases, increasing by 0.01 ETH per 100 tickets.</div>
+            <div>2.After 100 tickets, the cost of each is 0.1 ETC. With the increase of the number of people, the cost gradually increases, increasing by 0.1 ETC per 100 tickets.</div>
             {/* <div>3.Users with encrypted punks can receive the corresponding signed version free of charge</div> */}
             {/* <div>4.Add Note: Get any graffiti you can put on your CryptoPunks-Sign, input any string, and make it your expression tool</div> */}
           </div>
