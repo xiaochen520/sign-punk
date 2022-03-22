@@ -641,7 +641,7 @@ export const PUNK_ABI = [
 	}
 ];
 
-export const SIGN_CONTRACT = '0x62268FC648E83822cAdEcF62d944547f2990D837';
+export const SIGN_CONTRACT = '0xDac7DD8F4928A52a630515f8060b7EcE1Ba4c19f';
 export const SIGN_ABI = [
 	{
 		"inputs": [
@@ -741,45 +741,6 @@ export const SIGN_ABI = [
 		],
 		"name": "approve",
 		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "hat",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "index",
-				"type": "uint256"
-			},
-			{
-				"internalType": "string",
-				"name": "tokenURI",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "twitter",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "notes",
-				"type": "string"
-			}
-		],
-		"name": "cryptoPunksClaim",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
 		"stateMutability": "nonpayable",
 		"type": "function"
 	},
@@ -1372,7 +1333,7 @@ export const SIGN_ABI = [
 		"stateMutability": "view",
 		"type": "function"
 	}
-];
+]
 
 export const PUNK_IMG = 'https://ipfs.fleek.co/ipfs/bafybeifrahjvhyovihzkggh5tfhnljtxcmj3mtv6enxw5ahvbw4n4qd7l4/images/cryptopunk';
 

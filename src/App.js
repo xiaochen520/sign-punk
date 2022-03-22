@@ -437,7 +437,7 @@ function App() {
           </div>
         </div>
         <div className={sty.sideBox}>
-          <div className={cn(sty.title, 'tc')}>Get Free</div>
+          <div className={cn(sty.title, 'tc')}>Get</div>
           {/* <div className={cn(sty.inputBox, sty.require, 'flex flex-j')}>
             <input value={punkIndex} onChange={e => setPunkIndex(e.target.value)} placeholder='The number of CryptoPunks you own(such as "002")' type="text" />
           </div> */}
