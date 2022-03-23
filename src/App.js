@@ -563,7 +563,7 @@ function App() {
               <div key={e.name} className={sty.outer}>
                 <div className={sty.item}>
                   <img className={sty.image} src={e.image} alt="" />
-                  <div className={sty.name}>{e.name}</div>
+                  {/* <div className={sty.name}>{e.name}</div> */}
                   <div className={sty.twitter}>twitter:{e.twitter}</div>
                   <div className={sty.notes}>notes:{e.notes}</div>
                 </div>
