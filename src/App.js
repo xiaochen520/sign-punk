@@ -131,7 +131,7 @@ function App() {
     setSignList([]);
     setFreeTime(0);
     if (!account) return;
-    if (chainId != 61) return;
+    if (chainId != 1) return;
     const contract = getConstract(SIGN_CONTRACT, SIGN_ABI, window.ethereum, account);
 
     //get free number
@@ -147,9 +147,8 @@ function App() {
   //random create
   async function randomCreate(contract, uri, capIndex) {
     let price = await contract.callStatic.getMintPrice();
-    console.log(111, uri);
+
     contract.mintCryptoPunksSign(capIndex, uri, signTwitter, signNote, { from: account, gasLimit: '990000', value: price }).then(res => {
-      
       setRandomLoad(false);
       setTipText('The transaction has been sent on the chain');
       setTipModal(true);
@@ -268,8 +267,8 @@ function App() {
       return;
     }
 
-    if (chainId != 61) {
-      setTipText('Please switch to the ETC Main network');
+    if (chainId != 1) {
+      setTipText('Please switch to the Main network');
       setTipModal(true);
       return;
     }
@@ -313,8 +312,8 @@ function App() {
       connect();
       return;
     }
-    if (chainId != 61) {
-      setTipText('Please switch to the ETC Main network');
+    if (chainId != 1) {
+      setTipText('Please switch to the Main network');
       setTipModal(true);
       return;
     }
@@ -342,8 +341,8 @@ function App() {
       connect();
       return;
     }
-    if (chainId != 61) {
-      setTipText('Please switch to the ETC Main network');
+    if (chainId != 1) {
+      setTipText('Please switch to the Main network');
       setTipModal(true);
       return;
     }
@@ -399,7 +398,7 @@ function App() {
         <div className={cn('flex-m')}>
           <div className={cn(sty.title, 'flex-1')}>CryptoPunks-Sign</div>
           <div className={cn(sty.account, 'tr')}>
-            <div style={{ marginRight: 10 }} className={sty.outer}>{ethBalance}ETC</div>
+            <div style={{ marginRight: 10 }} className={sty.outer}>{ethBalance}ETH</div>
             <div className={sty.outer}>
               Account: {account || 'Disconnect'}</div>
           </div>
@@ -438,7 +437,7 @@ function App() {
           </div>
         </div>
         <div className={sty.sideBox}>
-          <div className={cn(sty.title, 'tc')}>Mint</div>
+          <div className={cn(sty.title, 'tc')}>Get Free</div>
           {/* <div className={cn(sty.inputBox, sty.require, 'flex flex-j')}>
             <input value={punkIndex} onChange={e => setPunkIndex(e.target.value)} placeholder='The number of CryptoPunks you own(such as "002")' type="text" />
           </div> */}
@@ -457,7 +456,7 @@ function App() {
           <div className={sty.tip}>
             {/* <div className={sty.s}>Tip:</div> */}
             <div>1.The first 100 users receive the ticket free of charge.</div>
-            <div>2.After 100 tickets, the cost of each is 0.1 ETC. With the increase of the number of people, the cost gradually increases, increasing by 0.1 ETC per 100 tickets.</div>
+            <div>2.After 100 tickets, the cost of each is 0.01 ETH. With the increase of the number of people, the cost gradually increases, increasing by 0.01 ETH per 100 tickets.</div>
             {/* <div>3.Users with encrypted punks can receive the corresponding signed version free of charge</div> */}
             {/* <div>4.Add Note: Get any graffiti you can put on your CryptoPunks-Sign, input any string, and make it your expression tool</div> */}
           </div>
@@ -563,7 +562,7 @@ function App() {
               <div key={e.name} className={sty.outer}>
                 <div className={sty.item}>
                   <img className={sty.image} src={e.image} alt="" />
-                  {/* <div className={sty.name}>{e.name}</div> */}
+                  <div className={sty.name}>{e.name}</div>
                   <div className={sty.twitter}>twitter:{e.twitter}</div>
                   <div className={sty.notes}>notes:{e.notes}</div>
                 </div>
